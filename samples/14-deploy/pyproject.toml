@@ -1,0 +1,9 @@
+[project]
+name = "myagent"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "strands-agents[all]",
+    "bedrock-agentcore[memory]",
+    "opentelemetry-instrumentation",
+]

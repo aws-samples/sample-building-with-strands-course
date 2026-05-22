@@ -1,5 +1,6 @@
 from strands import Agent, AgentSkills
-from strands.agent.conversation_manager import SummarizingConversationManager
+from strands.agent.conversation_manager import SlidingWindowConversationManager
+from strands.session.file_session_manager import FileSessionManager
 from customer_service_tools import lookup_customer, get_order_history, process_refund
 from steering_handlers import RefundWorkflowHandler, tone_handler
 
@@ -17,17 +18,27 @@ Important guidelines:
 
 skills_plugin = AgentSkills(skills=["./skills"])
 
-agent = Agent(
-    tools=[lookup_customer, get_order_history, process_refund],
-    system_prompt=SYSTEM_PROMPT,
-    conversation_manager=SummarizingConversationManager(
-        summary_ratio=0.3,
-        preserve_recent_messages=10,
-    ),
+session_manager = FileSessionManager(
+    session_id="customer-session-001",
+    storage_dir="./sessions",
 )
 
-print("Customer Service Agent with Summarization (type 'quit' to exit)")
+agent = Agent(
+    tools=[lookup_customer, get_order_history, process_refund],
+    plugins=[
+        skills_plugin,
+        RefundWorkflowHandler(),
+        tone_handler,
+    ],
+    system_prompt=SYSTEM_PROMPT,
+    conversation_manager=SlidingWindowConversationManager(window_size=20),
+    session_manager=session_manager,
+)
+
+print("Customer Service Agent with Persistence (type 'quit' to exit)")
 print("-" * 60)
+print(f"Session: {session_manager.session_id}")
+print(f"Restored messages: {len(agent.messages)}")
 
 while True:
     user_input = input("\nCustomer: ").strip()
@@ -38,4 +49,3 @@ while True:
         continue
     print()
     agent(user_input)
-    print(f"\n[DEBUG] Messages in context: {len(agent.messages)}")

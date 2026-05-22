@@ -1,6 +1,6 @@
 from strands import Agent, AgentSkills
-from strands.agent.conversation_manager import SlidingWindowConversationManager
-from strands.session.file_session_manager import FileSessionManager
+from strands.models import BedrockModel
+from strands.agent.conversation_manager import SummarizingConversationManager
 from customer_service_tools import lookup_customer, get_order_history, process_refund
 from steering_handlers import RefundWorkflowHandler, tone_handler
 
@@ -18,22 +18,30 @@ Important guidelines:
 
 skills_plugin = AgentSkills(skills=["./skills"])
 
-session_manager = FileSessionManager(
-    session_id="customer-session-001",
-    storage_dir="./sessions",
+# Use a cheaper model for summarization
+summarizer = Agent(
+    model=BedrockModel(
+        model_id="us.anthropic.claude-haiku-4-20250514-v1:0",
+    )
 )
 
 agent = Agent(
     tools=[lookup_customer, get_order_history, process_refund],
+    plugins=[
+        skills_plugin,
+        RefundWorkflowHandler(),
+        tone_handler,
+    ],
     system_prompt=SYSTEM_PROMPT,
-    conversation_manager=SlidingWindowConversationManager(window_size=20),
-    session_manager=session_manager,
+    conversation_manager=SummarizingConversationManager(
+        summary_ratio=0.4,
+        preserve_recent_messages=8,
+        summarization_agent=summarizer,
+    ),
 )
 
-print("Customer Service Agent with Persistence (type 'quit' to exit)")
+print("Customer Service Agent with Custom Summarizer (type 'quit' to exit)")
 print("-" * 60)
-print(f"Session: {session_manager.session_id}")
-print(f"Restored messages: {len(agent.messages)}")
 
 while True:
     user_input = input("\nCustomer: ").strip()
@@ -44,3 +52,4 @@ while True:
         continue
     print()
     agent(user_input)
+    print(f"\n[DEBUG] Messages in context: {len(agent.messages)}")

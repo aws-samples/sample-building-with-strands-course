@@ -1,4 +1,4 @@
 from strands import Agent
 
 agent = Agent()
-agent("What is the capital of France?")
+agent("Explain what an AI agent is in two sentences.")

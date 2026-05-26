@@ -1,77 +1,102 @@
 """
-Trajectory Evaluation
-
-Evaluates whether the agent followed the correct sequence of tool calls.
-Useful for agents where the process matters as much as the output.
+Trajectory evaluation — validates the agent followed the correct workflow.
+Demonstrates: TrajectoryEvaluator, tools_use_extractor, expected tool sequences.
 """
 
 from strands import Agent, tool
 from strands_evals import Case, Experiment
 from strands_evals.evaluators import TrajectoryEvaluator
 from strands_evals.extractors import tools_use_extractor
-from strands_evals.types import TaskOutput
 
 
 @tool
-def search_database(query: str) -> str:
-    """Search the database for information.
+def lookup_customer(customer_id: str) -> str:
+    """Look up customer information by ID.
 
     Args:
-        query: The search query
+        customer_id: The customer's unique identifier.
     """
-    return f"Results for: {query}"
+    return f"Customer {customer_id}: Sarah Johnson, email: sarah@example.com, status: active"
 
 
 @tool
-def format_results(data: str) -> str:
-    """Format search results for display.
+def get_order_history(customer_id: str) -> str:
+    """Get order history for a customer.
 
     Args:
-        data: Raw data to format
+        customer_id: The customer's unique identifier.
     """
-    return f"Formatted: {data}"
+    return f"Orders for {customer_id}: ORD-001 ($89.99, delivered), ORD-002 ($149.99, shipped)"
 
 
+@tool
+def process_refund(order_id: str, amount: float) -> str:
+    """Process a refund for an order.
+
+    Args:
+        order_id: The order to refund.
+        amount: The refund amount in dollars.
+    """
+    return f"Refund of ${amount:.2f} processed for {order_id}. Confirmation: REF-12345"
+
+
+def get_response_with_tools(case: Case) -> dict:
+    """Run agent and capture tool trajectory."""
+    agent = Agent(
+        tools=[lookup_customer, get_order_history, process_refund],
+        system_prompt="""You are a customer service agent. When processing refunds, you MUST:
+1. First look up the customer
+2. Then check their order history
+3. Only then process the refund
+Always follow this exact order.""",
+        callback_handler=None,
+    )
+
+    response = agent(case.input)
+
+    # Extract the tool call trajectory
+    trajectory = tools_use_extractor.extract_agent_tools_used_from_messages(agent.messages)
+
+    return {"output": str(response), "trajectory": trajectory}
+
+
+# Define cases with expected tool sequences
+test_cases = [
+    Case[str, str](
+        name="refund-workflow",
+        input="Customer C-1001 wants a refund for order ORD-001 ($89.99).",
+        expected_trajectory=["lookup_customer", "get_order_history", "process_refund"],
+        metadata={"category": "workflow_compliance"},
+    ),
+    Case[str, str](
+        name="info-lookup-only",
+        input="Can you look up customer C-1001 and tell me their order history?",
+        expected_trajectory=["lookup_customer", "get_order_history"],
+        metadata={"category": "workflow_compliance"},
+    ),
+]
+
+# Create trajectory evaluator
 evaluator = TrajectoryEvaluator(
     rubric="""
-    The correct workflow is:
-    1. search_database must be called first
-    2. format_results must be called second
-
-    Score 1.0 if the sequence is correct.
-    Score 0.5 if tools are used but in wrong order.
-    Score 0.0 if steps are missing.
+    Evaluate whether the agent followed the expected tool sequence:
+    - Use in_order_match: the expected tools should appear in order,
+      but extra tools in between are acceptable.
+    - Score 1.0 if the expected sequence is followed correctly.
+    - Score 0.5 if tools are called but in wrong order.
+    - Score 0.0 if expected tools are missing entirely.
     """,
     include_inputs=True,
 )
 
+# Give evaluator context about available tools
+sample_agent = Agent(tools=[lookup_customer, get_order_history, process_refund])
+tool_descriptions = tools_use_extractor.extract_tools_description(sample_agent, is_short=True)
+evaluator.update_trajectory_description(tool_descriptions)
 
-def get_response(case: Case) -> TaskOutput:
-    agent = Agent(
-        tools=[search_database, format_results],
-        system_prompt="Always search first, then format the results.",
-        callback_handler=None,
-    )
-    response = agent(case.input)
+# Run experiment
+experiment = Experiment[str, str](cases=test_cases, evaluators=[evaluator])
+reports = experiment.run_evaluations(get_response_with_tools)
 
-    trajectory = tools_use_extractor.extract_agent_tools_used_from_messages(
-        agent.messages
-    )
-    evaluator.update_trajectory_description(
-        tools_use_extractor.extract_tools_description(agent)
-    )
-
-    return TaskOutput(output=str(response), trajectory=trajectory)
-
-
-cases = [
-    Case(
-        name="search-and-format",
-        input="Find information about Python programming",
-        expected_trajectory=["search_database", "format_results"],
-    ),
-]
-
-experiment = Experiment(cases=cases, evaluators=[evaluator])
-reports = experiment.run_evaluations(get_response)
+print("=== Trajectory Evaluation Results ===")
 reports[0].run_display()

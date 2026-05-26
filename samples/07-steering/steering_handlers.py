@@ -26,6 +26,7 @@ class RefundWorkflowHandler(SteeringHandler):
 
         print("[STEERING] 🔍 process_refund attempted — checking workflow...")
 
+        # Get execution history through managed ledger
         ledger = self.steering_context.data.get("ledger", {})
         tool_calls = ledger.get("tool_calls", [])
         print(f"[STEERING] 📋 Ledger has {len(tool_calls)} tool calls: {[c.get('tool_name', '?') + ':' + c.get('status', '?') for c in tool_calls]}")

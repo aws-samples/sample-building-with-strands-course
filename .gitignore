@@ -9,6 +9,7 @@ venv/
 dist/
 build/
 *.egg-info/
+cdk.out/
 
 # IDE
 .vscode/
@@ -29,3 +30,32 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# Video renders (large MP4 files)
+videos/**/*.mp4
+
+# HyperFrames cache/thumbnails
+videos/**/.thumbnails/
+videos/**/.hyperframes/
+
+# Offloaded agent context
+samples/**/offloaded/
+
+# Session data
+samples/**/sessions/
+
+# Agent output files
+samples/**/report.md
+samples/**/frameworks.md
+
+# Deploy artifacts
+samples/14-deploy/**/node_modules/
+samples/14-deploy/**/cdk.out/
+samples/14-deploy/**/dist/
+samples/14-deploy/**/*.zip
+samples/14-deploy/**/.cache/
+samples/14-deploy/**/.cli/
+samples/14-deploy/**/.llm-context/
+samples/14-deploy/**/package-lock.json
+samples/14-deploy/**/demo-commands.txt
+samples/14-deploy/**/staging/

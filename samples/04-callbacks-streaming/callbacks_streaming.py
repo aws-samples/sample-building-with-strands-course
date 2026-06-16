@@ -18,8 +18,6 @@ from strands_tools import calculator
 # =============================================================================
 # 1. Default behavior — streaming just works
 # =============================================================================
-# No callback_handler specified = PrintingCallbackHandler.
-# Text streams to stdout as it's generated. Tool calls show inline.
 
 print("=" * 60)
 print("DEFAULT STREAMING")
@@ -32,30 +30,28 @@ agent("What is 1024 * 768?")
 # =============================================================================
 # 2. Custom callback handler — buffered messages
 # =============================================================================
-# A callback handler is a function that accepts **kwargs. The SDK calls it
-# for every event. The keys you care about:
-#   - "data": a text chunk from the model
-#   - "current_tool_use": dict with "name" when a tool is being called
-#   - "message": a complete message object when one is finished
-#   - "result": the final AgentResult when the loop finishes
-#
-# This one buffers text and only shows complete messages — useful for chat
-# interfaces where you want polished, complete responses instead of raw
-# streaming fragments.
 
 print("\n\n" + "=" * 60)
-print("CUSTOM CALLBACK — buffered messages")
+print("CUSTOM CALLBACK — buffered output")
 print("=" * 60)
 
 
-def message_buffer_handler(**kwargs):
+def buffered_handler(**kwargs):
+    # "data" events are individual text chunks as they stream in.
+    # We ignore them here (no printing) so nothing appears mid-generation.
+
+    # "message" fires when a complete message is ready.
     if "message" in kwargs and kwargs["message"].get("role") == "assistant":
-        print(json.dumps(kwargs["message"], indent=2, default=str))
+        # Extract just the text content from the complete message
+        content = kwargs["message"].get("content", [])
+        for block in content:
+            if "text" in block:
+                print(block["text"])
 
 
 agent = Agent(
     tools=[calculator],
-    callback_handler=message_buffer_handler,
+    callback_handler=buffered_handler,
 )
 
 agent("What is 2 to the power of 16, minus 1?")
@@ -64,9 +60,6 @@ agent("What is 2 to the power of 16, minus 1?")
 # =============================================================================
 # 3. Silent mode — callback_handler=None
 # =============================================================================
-# Nothing prints. You get the result back programmatically.
-# This matters in multi-agent systems where sub-agents run silently
-# while the orchestrator streams to the user.
 
 print("\n\n" + "=" * 60)
 print("SILENT MODE")

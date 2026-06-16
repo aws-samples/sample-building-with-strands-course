@@ -1,6 +1,6 @@
-# Video 2: Model Providers
+# Model Providers
 
-This video shows how to swap the underlying model provider without changing your agent code. Strands supports Bedrock, Anthropic, OpenAI, and Ollama out of the box — your agent logic stays identical regardless of which one you pick.
+Strands separates agent logic from model selection. You can swap the underlying model provider without changing your agent code — your tools, system prompt, and orchestration logic stay identical regardless of which provider you use.
 
 ## Files
 
@@ -12,11 +12,17 @@ This video shows how to swap the underlying model provider without changing your
 python model_providers.py
 ```
 
-## Notes
+## Supported Providers
 
-- Each provider requires its own credentials/setup:
-  - **Bedrock**: AWS credentials configured
-  - **Anthropic**: `ANTHROPIC_API_KEY` environment variable
-  - **OpenAI**: `OPENAI_API_KEY` environment variable
-  - **Ollama**: Ollama running locally (`ollama serve`)
-- Only one provider should be uncommented at a time.
+| Provider | Setup Required |
+|----------|---------------|
+| **Bedrock** (default) | AWS credentials configured |
+| **Anthropic** | `ANTHROPIC_API_KEY` environment variable |
+| **OpenAI** | `OPENAI_API_KEY` environment variable |
+| **Ollama** | Ollama running locally (`ollama serve`) |
+
+## Key Concepts
+
+- **Provider abstraction**: The `Agent` class accepts a `model=` parameter that takes any provider instance. Your agent code doesn't know or care which model is behind it.
+- **Local models**: Ollama lets you run models entirely on your machine — useful for development, offline use, or when you want to avoid API costs.
+- **Cross-provider portability**: Build your agent once, then swap models based on cost, latency, capability, or deployment requirements.

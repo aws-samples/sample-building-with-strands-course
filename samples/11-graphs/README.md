@@ -1,6 +1,8 @@
-# Video 11: Graphs
+# Graphs
 
-Graphs define explicit execution order between agents using nodes and edges. Unlike agents-as-tools (where the orchestrator decides when to delegate), graphs give you deterministic control over the flow — including parallel fan-out, conditional branching, and feedback loops.
+Graphs define explicit execution order between agents using nodes and edges. Unlike agents-as-tools (where the orchestrator decides flow dynamically), graphs give you deterministic control — including parallel fan-out, conditional branching, and feedback loops.
+
+Use graphs when you know the execution order ahead of time and want it guaranteed.
 
 ## Files
 
@@ -12,8 +14,19 @@ Graphs define explicit execution order between agents using nodes and edges. Unl
 python basic_graph.py
 ```
 
-## Notes
+## Key Concepts
 
-- Graphs are best when you know the execution order ahead of time and want it to be deterministic.
-- Parallel nodes run concurrently — useful for independent tasks like analysis and summarization.
-- Compare this to agents-as-tools (Video 10) where the orchestrator decides the flow dynamically.
+- **Nodes**: Each node is an agent (or any callable). Nodes execute when all their incoming edges are satisfied.
+- **Edges**: Define dependencies between nodes. An edge from A to B means B waits for A to complete before starting.
+- **Parallel fan-out**: Nodes without dependencies on each other run concurrently. In the example, analysis and summarization happen simultaneously.
+- **Deterministic flow**: Unlike agents-as-tools where the model decides the order, graphs guarantee the sequence you defined.
+- **Data flow**: Each node receives the output of its predecessor nodes as input.
+- **When to use graphs**: Pipelines with known structure, fan-out/fan-in patterns, workflows that need guaranteed execution order, and feedback loops.
+
+## Comparison
+
+| Pattern | Flow Control | Best For |
+|---------|-------------|----------|
+| Agents as Tools | Orchestrator decides | Separable domains, synthesis |
+| Graphs | Defined by edges | Known pipelines, parallelism |
+| Swarms | Agents decide | Unknown sequences, exploration |

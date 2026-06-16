@@ -1,6 +1,10 @@
-# Video 6: Plugins & Skills
+# Plugins and Skills
 
-This video introduces two composition patterns. Plugins modify agent behavior by bundling tools, hooks, and initialization logic together. Skills provide progressive disclosure — instructions are loaded on demand when the agent needs them, rather than stuffing everything into the system prompt upfront.
+Plugins and skills are two composition patterns that help manage agent complexity as your system grows.
+
+**Plugins** bundle tools, hooks, and initialization logic into reusable packages. Instead of manually wiring up multiple related components, you install a plugin and it handles the setup.
+
+**Skills** provide progressive disclosure for instructions. Rather than stuffing every possible instruction into the system prompt upfront (which wastes context and confuses the model), skills are loaded on demand when the agent encounters a relevant request.
 
 ## Files
 
@@ -21,7 +25,13 @@ Then try asking things like:
 - "Where is my package?"
 - "I can't log into my account"
 
-## Notes
+## Key Concepts
 
-- Skills are just markdown files in a directory — the agent discovers and loads them as needed.
-- Watch how the agent only loads the relevant skill for each request instead of having all instructions in context at once.
+- **Prompt bloat**: Loading all instructions into the system prompt wastes tokens, dilutes attention, and increases cost. Skills solve this.
+- **On-demand loading**: The agent discovers available skills and loads only the one it needs for the current request.
+- **Skill format**: Each skill is a markdown file (`SKILL.md`) in its own directory. The agent reads the directory listing to discover skills, then loads the relevant one.
+- **Plugin interface**: Plugins implement lifecycle hooks and tool registration in a single class — install once, get the full behavior.
+
+## Further Reading
+
+- [Hands-on Workshop: Module 3 (Skills + Steering)](https://catalog.us-east-1.prod.workshops.aws/workshops/083b80d7-5a90-402b-9bb4-19fb53092808/en-US/03-skills-steering)

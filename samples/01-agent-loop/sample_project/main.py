@@ -22,3 +22,8 @@ def get_user(user_id: int):
     if user_id in users:
         return {"id": user_id, "name": users[user_id]}
     return {"error": "User not found"}
+
+
+@app.get("/health")
+def health():
+    return {"status": "healthy"}

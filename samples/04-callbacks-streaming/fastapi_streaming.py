@@ -2,7 +2,7 @@
 FastAPI Streaming Endpoint
 
 A real streaming AI endpoint in ~20 lines. Run with:
-    uvicorn 04_fastapi_streaming:app --reload
+    uvicorn fastapi_streaming:app --reload
 
 Test with:
     curl -X POST http://localhost:8000/stream \

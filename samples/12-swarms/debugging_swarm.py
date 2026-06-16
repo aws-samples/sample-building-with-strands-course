@@ -1,19 +1,10 @@
-import logging
 from strands import Agent, tool
 from strands.multiagent import Swarm
-
-logging.getLogger("strands.multiagent").setLevel(logging.DEBUG)
-logging.basicConfig(
-    format="%(levelname)s | %(name)s | %(message)s",
-    handlers=[logging.StreamHandler()],
-)
 
 
 # =============================================================================
 # Mock tools that simulate production debugging capabilities
 # =============================================================================
-
-
 @tool
 def check_application_logs(service_name: str, time_range: str = "last_hour") -> str:
     """Search application logs for errors and anomalies.

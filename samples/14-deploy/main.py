@@ -1,7 +1,8 @@
 import json
 import logging
 import os
-from strands import Agent, AgentSkills
+from strands import Agent
+from strands.vended_plugins.skills.agent_skills import AgentSkills
 from strands.agent.conversation_manager import SlidingWindowConversationManager
 from bedrock_agentcore.runtime import BedrockAgentCoreApp
 from bedrock_agentcore.memory.integrations.strands.config import AgentCoreMemoryConfig, RetrievalConfig
@@ -10,6 +11,12 @@ from customer_service_tools import lookup_customer, get_order_history, process_r
 from steering_handlers import RefundWorkflowHandler, tone_handler
 
 logger = logging.getLogger(__name__)
+
+# ============================================================
+# AgentCore App
+# ============================================================
+app = BedrockAgentCoreApp()
+
 
 # ============================================================
 # Configuration
@@ -29,7 +36,7 @@ Important guidelines:
 - Never show internal IDs, system formats, or example data to the customer.
 - Be warm but efficient. Customers want their problem solved, not a long conversation."""
 
-skills_plugin = AgentSkills(skills=["./skills"])
+SKILLS_DIR = os.path.join(os.path.dirname(__file__), "skills")
 
 _agent = None
 
@@ -63,7 +70,7 @@ def create_customer_service_agent(actor_id: str, session_id: str | None = None):
         _agent = Agent(
             tools=[lookup_customer, get_order_history, process_refund],
             plugins=[
-                skills_plugin,
+                AgentSkills(skills=[SKILLS_DIR]),
                 RefundWorkflowHandler(),
                 tone_handler,
             ],
@@ -73,12 +80,6 @@ def create_customer_service_agent(actor_id: str, session_id: str | None = None):
         )
 
     return _agent
-
-
-# ============================================================
-# AgentCore App
-# ============================================================
-app = BedrockAgentCoreApp()
 
 
 @app.entrypoint

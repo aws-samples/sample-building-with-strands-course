@@ -1,0 +1,6 @@
+uvicorn fastapi_streaming:app --reload
+source /Users/willismt/Documents/GitHub/strands-course/.venv/bin/activate
+
+curl -X POST http://localhost:8000/stream \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "What is 1024 * 768?"}'

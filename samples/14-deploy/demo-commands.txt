@@ -1,5 +1,0 @@
-npm install -g @aws/agentcore
-agentcore create
-agentcore add memory --name CustomerServiceMemory --strategies SEMANTIC,USER_PREFERENCE
-agentcore deploy
-agentcore invoke '{"prompt": "I need help with my order", "customer_id": "C-1001", "session_id": "sarah_session_1", "actor_id": "sarah"}'

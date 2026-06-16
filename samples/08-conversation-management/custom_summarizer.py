@@ -1,6 +1,7 @@
 from strands import Agent, AgentSkills
 from strands.models import BedrockModel
 from strands.agent.conversation_manager import SummarizingConversationManager
+from strands.vended_plugins.context_offloader import ContextOffloader, FileStorage
 from customer_service_tools import lookup_customer, get_order_history, process_refund
 from steering_handlers import RefundWorkflowHandler, tone_handler
 
@@ -18,11 +19,21 @@ Important guidelines:
 
 skills_plugin = AgentSkills(skills=["./skills"])
 
-# Use a cheaper model for summarization
+# Use a cheaper model for summarization with a custom prompt
+# that focuses on what matters for customer service conversations
+SUMMARIZATION_PROMPT = """Summarize the following customer service conversation.
+Focus on:
+- Customer identity (name, ID, account status)
+- The issue or request they came in with
+- Actions already taken (tools called, information retrieved)
+- Any unresolved problems or pending next steps
+"""
+
 summarizer = Agent(
     model=BedrockModel(
         model_id="us.anthropic.claude-haiku-4-20250514-v1:0",
-    )
+    ),
+    system_prompt=SUMMARIZATION_PROMPT,
 )
 
 agent = Agent(
@@ -31,12 +42,20 @@ agent = Agent(
         skills_plugin,
         RefundWorkflowHandler(),
         tone_handler,
+        ContextOffloader(
+            storage=FileStorage("./offloaded"),
+            max_result_tokens=8_000,
+            preview_tokens=2_000,
+        ),
     ],
     system_prompt=SYSTEM_PROMPT,
     conversation_manager=SummarizingConversationManager(
         summary_ratio=0.4,
         preserve_recent_messages=8,
         summarization_agent=summarizer,
+        proactive_compression={
+            "compression_threshold": 0.9,
+        },
     ),
 )
 

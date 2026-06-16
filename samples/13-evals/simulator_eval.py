@@ -1,41 +1,13 @@
-"""
-Multi-turn simulation evaluation.
-Demonstrates: ActorSimulator for generating realistic multi-turn conversations
-and evaluating agent behavior over time.
-
-Uses the same customer service agent from Videos 6-9 with tools, skills, and steering.
-"""
-
-from strands import Agent, AgentSkills
-from strands.agent.conversation_manager import SlidingWindowConversationManager
 from strands_evals import Case, Experiment, ActorSimulator
 from strands_evals.evaluators import HelpfulnessEvaluator, GoalSuccessRateEvaluator
 from strands_evals.mappers import StrandsInMemorySessionMapper
 from strands_evals.telemetry import StrandsEvalsTelemetry
 
-# Import the customer service tools and steering from our existing code
-import sys
-sys.path.insert(0, "../07-steering")
-from customer_service_tools import lookup_customer, get_order_history, process_refund
-from steering_handlers import RefundWorkflowHandler, tone_handler
-
-SYSTEM_PROMPT = """You are a customer service agent for an online electronics store.
-Be helpful, professional, and concise. Use the available tools to look up customer
-information and process requests. When a customer needs help, activate the appropriate
-skill for step-by-step guidance.
-
-Important guidelines:
-- Always ask for the customer ID first if you don't have it.
-- Use the data returned by tools to answer questions. Do not ask the customer for
-  information that is already available in the tool results.
-- Never show internal IDs, system formats, or example data to the customer.
-- Be warm but efficient. Customers want their problem solved, not a long conversation."""
+from create_agent import create_customer_service_agent
 
 # Setup telemetry for trace-based evaluation
 telemetry = StrandsEvalsTelemetry().setup_in_memory_exporter()
 memory_exporter = telemetry.in_memory_exporter
-
-skills_plugin = AgentSkills(skills=["../07-steering/skills"])
 
 
 def task_function(case: Case) -> dict:
@@ -47,16 +19,8 @@ def task_function(case: Case) -> dict:
         max_turns=8,
     )
 
-    # Create the full customer service agent with steering and skills
-    agent = Agent(
-        tools=[lookup_customer, get_order_history, process_refund],
-        plugins=[
-            skills_plugin,
-            RefundWorkflowHandler(),
-            tone_handler,
-        ],
-        system_prompt=SYSTEM_PROMPT,
-        conversation_manager=SlidingWindowConversationManager(window_size=20),
+    # Create the full customer service agent (tools, steering, skills)
+    agent = create_customer_service_agent(
         trace_attributes={
             "gen_ai.conversation.id": case.session_id,
             "session.id": case.session_id,
@@ -84,18 +48,18 @@ def task_function(case: Case) -> dict:
 test_cases = [
     Case[str, str](
         name="refund-request",
-        input="Hi, I bought a laptop last week and it arrived with a cracked screen. I need a refund.",
-        metadata={"task_description": "Customer gets refund processed for damaged item"},
+        input="Hi, I need to return a laptop I bought. My customer ID is C-1001.",
+        metadata={"task_description": "Customer gets refund processed for their order"},
     ),
     Case[str, str](
         name="order-tracking",
-        input="Where is my order? I placed it 3 days ago and haven't received any shipping updates.",
-        metadata={"task_description": "Customer receives tracking information or status update"},
+        input="Can you check on my orders? My customer ID is C-1002.",
+        metadata={"task_description": "Customer receives order status information"},
     ),
     Case[str, str](
-        name="product-question",
-        input="I'm looking at the new wireless headphones on your site. Do they work with Android?",
-        metadata={"task_description": "Customer gets accurate product compatibility information"},
+        name="account-issue",
+        input="My account seems to be having issues. Customer ID C-1001.",
+        metadata={"task_description": "Customer gets account troubleshooting help"},
     ),
 ]
 

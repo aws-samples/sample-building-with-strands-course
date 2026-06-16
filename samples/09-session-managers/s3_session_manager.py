@@ -20,7 +20,7 @@ skills_plugin = AgentSkills(skills=["./skills"])
 
 session_manager = S3SessionManager(
     session_id="customer-session-001",
-    bucket="agent-sessions-bucket-mtw",
+    bucket="your-agent-sessions-bucket",
     prefix="production/",
     region_name="us-east-1",
 )

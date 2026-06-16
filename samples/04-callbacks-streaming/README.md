@@ -1,6 +1,6 @@
-# Video 4: Callbacks & Streaming
+# Callbacks and Streaming
 
-This video explains how streaming works in Strands and the different ways to control and consume streamed output. You'll see callback handlers for customizing console output, async iterators for programmatic access, and a FastAPI example for streaming over HTTP.
+By default, Strands streams model output token-by-token to the console. Callback handlers let you customize this behavior — suppress tool output, format text differently, or route events to a logging system. For programmatic consumption, async iterators give you structured access to every event the agent produces. For serving agents over HTTP, you can stream responses using Server-Sent Events.
 
 ## Files
 
@@ -16,12 +16,24 @@ python async_streaming.py
 
 # For the FastAPI example:
 pip install fastapi uvicorn
-python fastapi_streaming.py
+uvicorn fastapi_streaming:app --reload
 ```
 
-Then hit `http://localhost:8000` to test the streaming endpoint.
+Then test the streaming endpoint:
 
-## Notes
+```bash
+curl -X POST http://localhost:8000/stream \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "What is 1024 * 768?"}'
+```
 
-- The FastAPI example starts a local server — you can test it with `curl` or a browser.
-- Callbacks are great for CLI tools; async iterators are better for integrating into larger applications.
+## Key Concepts
+
+- **Callback handlers**: Intercept streaming events (text chunks, tool starts/ends, errors) and decide what to do with them. Great for CLI tools.
+- **Async iterators**: Consume agent events as a structured stream — better for integrating into larger applications where you need programmatic control.
+- **SSE streaming**: Server-Sent Events let web clients consume agent output incrementally over HTTP, giving users real-time feedback.
+- **Suppressing output**: Use `callback_handler=None` on agents that should run silently (like sub-agents) so only the orchestrator streams to the user.
+
+## Further Reading
+
+- [Hands-on Workshop: Build Your First Agent](https://catalog.us-east-1.prod.workshops.aws/workshops/083b80d7-5a90-402b-9bb4-19fb53092808/en-US)

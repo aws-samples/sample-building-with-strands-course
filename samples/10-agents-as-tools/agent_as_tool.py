@@ -18,44 +18,33 @@ simplest, and for a lot of use cases it's the only one you need.
 
 from strands import Agent, tool
 from strands.models.bedrock import BedrockModel
-from strands_tools import http_request, calculator, python_repl
+from strands_tools import http_request
 
 
 # =============================================================================
-# The problem: a writer that also needs to research
-# =============================================================================
-# You could give one agent writing tools AND web search AND a giant system prompt.
-# Or you could specialize. A writer that writes. A researcher that searches.
-# The writer calls the researcher when it needs information.
-
 # Method 1: Pass the agent directly in the tools list.
-# Variable name becomes the tool name. System prompt becomes the description.
-# Single `input` string parameter. Simplest possible setup.
+# =============================================================================
 
-researcher = Agent(
-    system_prompt="You are a research specialist. Find factual information and cite sources.",
-    tools=[http_request],
-)
+# researcher = Agent(
+#     name="researcher",
+#     system_prompt="You are a research specialist. Find factual information and cite sources.",
+#     tools=[http_request],
+# )
 
-writer = Agent(
-    system_prompt="You are a technical writer. Use the researcher to gather facts, then write a clear summary.",
-    tools=[researcher],
-)
+# writer = Agent(
+#     name="writer",
+#     system_prompt="You are a technical writer. Use the researcher to gather facts, then write a clear summary.",
+#     tools=[researcher],
+# )
 
-writer("Write a summary of the latest Strands Agents SDK features.")
+# writer("Research the fastapi/fastapi GitHub repo using the GitHub API at https://api.github.com/repos/fastapi/fastapi and write a 3-sentence summary of the project.")
 
 
 # =============================================================================
-# Method 2: @tool decorator — full control
+# Method 2: @tool decorator 
 # =============================================================================
-# Pre-processing, post-processing, error handling, multiple input parameters.
-# The agent is created inside the function so it starts fresh every call —
-# clean context each time. That's a design choice.
-
-# Different models for different roles — powerful model for orchestration,
-# cheaper/faster model for specialist tasks.
-orchestrator_model = BedrockModel(model_id="us.anthropic.claude-sonnet-4-20250514-v1:0")
-specialist_model = BedrockModel(model_id="us.anthropic.claude-haiku-4-20250514-v1:0")
+orchestrator_model = BedrockModel(model_id="us.anthropic.claude-opus-4-6-v1")
+specialist_model = BedrockModel(model_id="us.anthropic.claude-sonnet-4-20250514-v1:0")
 
 @tool
 def research_assistant(query: str, depth: str = "normal") -> str:
@@ -87,5 +76,5 @@ writer = Agent(
     tools=[research_assistant],
 )
 
-result = writer("Write a summary of the latest Strands Agents SDK features.")
+result = writer("What are the latest Strands Agents SDK features? Check the Github API")
 print(result)

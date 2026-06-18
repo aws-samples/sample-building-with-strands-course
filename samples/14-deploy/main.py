@@ -36,7 +36,7 @@ Important guidelines:
 - Never show internal IDs, system formats, or example data to the customer.
 - Be warm but efficient. Customers want their problem solved, not a long conversation."""
 
-SKILLS_DIR = os.path.join(os.path.dirname(__file__), "skills")
+skills_plugin = AgentSkills(skills=["./skills"])
 
 _agent = None
 
@@ -70,7 +70,7 @@ def create_customer_service_agent(actor_id: str, session_id: str | None = None):
         _agent = Agent(
             tools=[lookup_customer, get_order_history, process_refund],
             plugins=[
-                AgentSkills(skills=[SKILLS_DIR]),
+                skills_plugin,
                 RefundWorkflowHandler(),
                 tone_handler,
             ],

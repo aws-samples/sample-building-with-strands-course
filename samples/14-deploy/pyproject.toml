@@ -6,4 +6,5 @@ dependencies = [
     "strands-agents>=1.40.0",
     "bedrock-agentcore[memory]",
     "opentelemetry-instrumentation",
+    "aws-opentelemetry-distro",
 ]

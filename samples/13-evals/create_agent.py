@@ -10,7 +10,6 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "07-steering"))
 
 from strands import Agent, AgentSkills
-from strands.agent.conversation_manager import SlidingWindowConversationManager
 from customer_service_tools import lookup_customer, get_order_history, process_refund
 from steering_handlers import RefundWorkflowHandler, tone_handler
 
@@ -41,7 +40,7 @@ def create_customer_service_agent(**kwargs):
             tone_handler,
         ],
         system_prompt=SYSTEM_PROMPT,
-        conversation_manager=SlidingWindowConversationManager(window_size=20),
+        conversation_manager="auto",
     )
     defaults.update(kwargs)
 

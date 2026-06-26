@@ -1,5 +1,4 @@
 from strands import Agent, AgentSkills
-from strands.agent.conversation_manager import SlidingWindowConversationManager
 from strands.session.s3_session_manager import S3SessionManager
 from customer_service_tools import lookup_customer, get_order_history, process_refund
 from steering_handlers import RefundWorkflowHandler, tone_handler
@@ -33,7 +32,7 @@ agent = Agent(
         tone_handler,
     ],
     system_prompt=SYSTEM_PROMPT,
-    conversation_manager=SlidingWindowConversationManager(window_size=20),
+    conversation_manager="auto",
     session_manager=session_manager,
 )
 

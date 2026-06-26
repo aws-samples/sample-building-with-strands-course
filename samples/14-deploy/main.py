@@ -3,7 +3,6 @@ import logging
 import os
 from strands import Agent
 from strands.vended_plugins.skills.agent_skills import AgentSkills
-from strands.agent.conversation_manager import SlidingWindowConversationManager
 from bedrock_agentcore.runtime import BedrockAgentCoreApp
 from bedrock_agentcore.memory.integrations.strands.config import AgentCoreMemoryConfig, RetrievalConfig
 from bedrock_agentcore.memory.integrations.strands.session_manager import AgentCoreMemorySessionManager
@@ -75,7 +74,7 @@ def create_customer_service_agent(actor_id: str, session_id: str | None = None):
                 tone_handler,
             ],
             system_prompt=SYSTEM_PROMPT,
-            conversation_manager=SlidingWindowConversationManager(window_size=20),
+            conversation_manager="auto",
             session_manager=session_manager,
         )
 

@@ -1,13 +1,13 @@
 # Hooks
 
-Hooks add deterministic control to a probabilistic loop. They inject code at lifecycle events — before/after tool calls and before/after the agent loop — without changing the agent's logic. Unlike tools (which the model decides to use), hooks fire automatically every time, regardless of what the model reasons.
+Hooks add deterministic control to a probabilistic loop. They inject code at lifecycle events - before/after tool calls and before/after the agent loop - without changing the agent's logic. Unlike tools (which the model decides to use), hooks fire automatically every time, regardless of what the model reasons.
 
 A runaway loop could call the same tool dozens of times. A model might attempt a destructive operation without asking. Hooks solve this by enforcing rules that don't depend on the model "deciding" to behave.
 
 ## Files
 
-- **approval_interrupt.py** — Human-in-the-loop approval before file deletion. Uses `event.interrupt()` to pause execution and ask the user for confirmation.
-- **rate_limiter.py** — Prevents any tool from being called more than 3 times per request. Demonstrates how hooks can enforce safety boundaries.
+- **approval_interrupt.py** - Human-in-the-loop approval before file deletion. Uses `event.interrupt()` to pause execution and ask the user for confirmation.
+- **rate_limiter.py** - Prevents any tool from being called more than 3 times per request. Demonstrates how hooks can enforce safety boundaries.
 
 ## Running
 
@@ -20,11 +20,11 @@ python rate_limiter.py
 
 - **Deterministic vs probabilistic**: Prompting asks the model to behave. Hooks guarantee it. Limits run every time, not when the model feels like it.
 - **Lifecycle events**: Hooks register callbacks on `BeforeInvocationEvent`, `BeforeToolCallEvent`, `AfterToolCallEvent`, and other lifecycle points.
-- **Cancel mechanism**: `event.cancel_tool` skips a tool call and feeds a message back to the model explaining why — so it learns and stops retrying.
-- **Interrupts**: `event.interrupt()` pauses agent execution and returns control to the caller — useful for approval workflows.
+- **Cancel mechanism**: `event.cancel_tool` skips a tool call and feeds a message back to the model explaining why - so it learns and stops retrying.
+- **Interrupts**: `event.interrupt()` pauses agent execution and returns control to the caller - useful for approval workflows.
 - **Per-request state**: Rate limits and counters reset per invocation (`BeforeInvocationEvent`), not for the agent's lifetime.
 - **Composability**: Multiple hooks can fire for the same event. They're stored as a list per event type, so you can layer behaviors.
-- **Separation of concerns**: Hooks don't touch tools or prompts — they're a separate, reusable layer.
+- **Separation of concerns**: Hooks don't touch tools or prompts - they're a separate, reusable layer.
 
 ## When to Use Hooks
 

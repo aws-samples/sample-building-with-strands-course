@@ -25,7 +25,7 @@ python tool_executor.py
 - **MCP servers**: External processes that expose tools over a standard protocol. Can run locally (stdio) or remotely (HTTP).
 - **Tool discovery**: Agents learn what tools are available at runtime from the MCP server's tool list - no hardcoding needed.
 - **Tool filtering**: In production, restrict which tools an agent can access using `tool_filters`. Only expose what the agent actually needs.
-- **Security boundary**: Tools execute with the permissions of the host process. If you give an agent the shell tool, you've given it access to your machine. With MCP, you're giving tools someone else controls to your agent. Be thoughtful about what you connect.
+- **Security boundary**: Tools execute with the permissions of the host process. If you give an agent the shell tool, you've given it access to your machine. With MCP, you're giving tools someone else controls to your agent. Be thoughtful about what you connect. For sandboxed execution, check out [Strands Shell](https://github.com/strands-agents/shell) which gives agents isolated filesystem and network access.
 - **Coexistence**: Custom tools, built-in tools, and MCP tools can all live in the same agent's tool list.
 
 ## Prerequisites

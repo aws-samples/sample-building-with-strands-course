@@ -149,7 +149,7 @@ More examples of deploying and operating agents with Amazon Bedrock AgentCore:
 
 - [Strands Agents Samples](https://github.com/strands-agents/samples) - Official samples including AgentCore deployments, multi-agent patterns, and production architectures
 
-### Strands Ecosystem
+### More from Strands
 
 - [Strands Shell](https://github.com/strands-agents/shell) - Sandboxed execution for agents
 - [Strands Evals](https://github.com/strands-agents/evals) - Chaos testing, red teaming, and evaluation suites

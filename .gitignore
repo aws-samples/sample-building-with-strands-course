@@ -61,3 +61,8 @@ samples/14-deploy/**/demo-commands.txt
 samples/14-deploy/**/staging/
 samples/14-deploy/**/.aws-sam/
 samples/14-deploy/**/samconfig.toml
+
+# Scan reports (local only)
+bandit-report.json
+pip-audit-report.json
+security-scan-summary.md

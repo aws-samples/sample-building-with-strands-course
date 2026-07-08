@@ -4,23 +4,23 @@ from strands_tools import http_request
 
 researcher = Agent(
     name="researcher",
-    system_prompt="You are a research specialist. Gather comprehensive information from the web.",
+    system_prompt="You are a research specialist. Make one or two http requests max to gather key facts, then return your findings as bullet points. Do not follow links or do additional searches.",
     tools=[http_request],
 )
 
 analyst = Agent(
     name="analyst",
-    system_prompt="You are a data analyst. Identify patterns, trends, and key insights from the research provided.",
+    system_prompt="You are a data analyst. Identify the top 3 patterns and their implications from the research provided. Keep your response under 150 words.",
 )
 
 summarizer = Agent(
     name="summarizer",
-    system_prompt="You are a summarizer. Condense raw research into concise key points and takeaways.",
+    system_prompt="You are a summarizer. Condense the research into 4-5 bullet points. Keep it under 100 words.",
 )
 
 report_writer = Agent(
     name="report_writer",
-    system_prompt="You synthesize analysis and summaries into a clear, well-structured final report.",
+    system_prompt="You synthesize analysis and summaries into a clear, well-structured final report. Keep it under 250 words.",
 )
 
 builder = GraphBuilder()

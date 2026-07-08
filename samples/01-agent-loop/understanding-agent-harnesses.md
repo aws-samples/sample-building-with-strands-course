@@ -8,7 +8,7 @@ Models are stateless. They process one request, produce a completion, and forget
 
 
 
-![Agent Loop Flow](agent-harness.png)
+![Agent Loop Flow](agent-loop-flow.png)
 
 1. Model receives **context** (system prompt + user input + tool list + history)
 2. Model **reasons** and decides whether to call a tool

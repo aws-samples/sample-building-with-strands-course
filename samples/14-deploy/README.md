@@ -126,7 +126,7 @@ agent = Agent(
     tools=[lookup_customer, get_order_history, process_refund],
     plugins=[skills_plugin, RefundWorkflowHandler(), tone_handler],
     system_prompt=SYSTEM_PROMPT,
-    conversation_manager="auto",
+    context_manager="auto",
     callback_handler=None,
 )
 

@@ -1,11 +1,11 @@
 from strands import Agent
 from strands.multiagent import GraphBuilder
-from strands_tools import http_request
+from strands.vended_tools.web_fetch import web_fetch
 
 researcher = Agent(
     name="researcher",
-    system_prompt="You are a research specialist. Make one or two http requests max to gather key facts, then return your findings as bullet points. Do not follow links or do additional searches.",
-    tools=[http_request],
+    system_prompt="You are a research specialist. Make one or two web fetches max to gather key facts, then return your findings as bullet points. Do not follow links or do additional searches.",
+    tools=[web_fetch],
 )
 
 analyst = Agent(

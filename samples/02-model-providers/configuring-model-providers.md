@@ -16,13 +16,13 @@ import os
 
 # Amazon Bedrock (default if no model specified)
 bedrock_model = BedrockModel(
-    model_id="us.anthropic.claude-opus-4-6-v1"
+    model_id="us.anthropic.claude-opus-5"
 )
 
 # Anthropic direct API
 anthropic_model = AnthropicModel(
     client_args={"api_key": os.environ["ANTHROPIC_API_KEY"]},
-    model_id="claude-sonnet-4-20250514",
+    model_id="claude-sonnet-5",
     max_tokens=1024,
     params={"temperature": 0.7},
 )

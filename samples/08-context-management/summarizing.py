@@ -1,6 +1,16 @@
+"""
+Context Strategy: Summarize
+
+Instead of dropping old messages, compress them into LLM-generated summaries.
+Preserves more information than truncation but introduces compression risk
+since summaries are lossy.
+
+This uses the new ContextManager with an Offload.summarize strategy that
+replaces old messages with summaries when utilization hits the threshold.
+"""
+
 from strands import Agent, AgentSkills
-from strands.agent.conversation_manager import SummarizingConversationManager
-from strands.vended_plugins.context_offloader import ContextOffloader, FileStorage
+from strands.experimental.context_manager import ContextManager, Offload
 from customer_service_tools import lookup_customer, get_order_history, process_refund
 from steering_handlers import RefundWorkflowHandler, tone_handler
 
@@ -24,19 +34,16 @@ agent = Agent(
         skills_plugin,
         RefundWorkflowHandler(),
         tone_handler,
-        ContextOffloader(
-            storage=FileStorage("./offloaded"),
-            max_result_tokens=8_000,
-            preview_tokens=2_000,
-        ),
     ],
     system_prompt=SYSTEM_PROMPT,
-    conversation_manager=SummarizingConversationManager(
-        summary_ratio=0.3,
-        preserve_recent_messages=10,
-        proactive_compression={
-            "compression_threshold": 0.9,
-        },
+    # Summarize strategy: truncate large tool results immediately, then
+    # summarize the oldest messages when context hits 85% full.
+    # preserve_recent=10 keeps the last 10 messages untouched.
+    context_manager=ContextManager(
+        strategies=[
+            Offload.truncate("tool_results").when(threshold=2500),
+            Offload.summarize("*").when(utilization=0.85, preserve_recent=10),
+        ],
     ),
 )
 

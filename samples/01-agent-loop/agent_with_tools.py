@@ -1,6 +1,5 @@
-import json
 from strands import Agent, tool
-from strands_tools import http_request, file_write
+from strands.vended_tools import file_editor, web_fetch
 
 
 @tool
@@ -11,10 +10,10 @@ def query_product_database(query: str) -> str:
         query: Search query for products (e.g., "wireless headphones", "USB-C hub")
     """
     products = {
-        "wireless headphones": "SKU-WH100: Wireless Headphones Pro — $79.99, 142 in stock, 4.5★ rating, launched 2025-03",
-        "usb-c hub": "SKU-UC200: USB-C Hub 7-in-1 — $45.00, 89 in stock, 4.2★ rating, launched 2024-11",
-        "mechanical keyboard": "SKU-MK300: Mechanical Keyboard RGB — $149.99, 23 in stock, 4.8★ rating, launched 2025-01",
-        "noise cancelling": "SKU-NC400: Noise Cancelling Earbuds — $129.99, 67 in stock, 4.6★ rating, launched 2025-05",
+        "wireless headphones": "SKU-WH100: Wireless Headphones Pro - $79.99, 142 in stock, 4.5★ rating, launched 2025-03",
+        "usb-c hub": "SKU-UC200: USB-C Hub 7-in-1 - $45.00, 89 in stock, 4.2★ rating, launched 2024-11",
+        "mechanical keyboard": "SKU-MK300: Mechanical Keyboard RGB - $149.99, 23 in stock, 4.8★ rating, launched 2025-01",
+        "noise cancelling": "SKU-NC400: Noise Cancelling Earbuds - $129.99, 67 in stock, 4.6★ rating, launched 2025-05",
     }
     key = query.lower()
     matches = [info for product_key, info in products.items() if product_key in key]
@@ -27,12 +26,12 @@ SYSTEM_PROMPT = """You are a product research analyst. You help the team underst
 market positioning by comparing competitor pricing with our internal catalog.
 
 When given a research task:
-1. Use http_request to gather public market data 
+1. Use web_fetch to gather public market data from the web
 2. Use query_product_database to check our internal pricing and inventory
-3. Write a brief competitive analysis and save it using file_write"""
+3. Write a brief competitive analysis and save it to report.md using file_editor"""
 
 agent = Agent(
-    tools=[http_request, file_write, query_product_database],
+    tools=[web_fetch, file_editor, query_product_database],
     system_prompt=SYSTEM_PROMPT,
 )
 
@@ -42,8 +41,7 @@ result = agent("Research what wireless headphones are trending on the market and
 # ============================================================
 # Uncomment to inspect conversation history
 # ============================================================
-print("\n" + "=" * 60)
-print("CONVERSATION HISTORY:")
-print("=" * 60)
-print(json.dumps(agent.messages, indent=2, default=str))
-
+# print("\n" + "=" * 60)
+# print("CONVERSATION HISTORY:")
+# print("=" * 60)
+# print(json.dumps(agent.messages, indent=2, default=str))

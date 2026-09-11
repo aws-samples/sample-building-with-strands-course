@@ -1,10 +1,10 @@
 # Tools and Callbacks
 
-Agents need tools from multiple sources. Strands supports three categories: custom tools (@tool decorator), community tools (strands-agents-tools), and MCP servers for connecting to external systems. All coexist in the same agent's tool list.
+Agents need tools from multiple sources. Strands supports three categories: custom tools (@tool decorator), vended tools (built into the SDK), and MCP servers for connecting to external systems. All coexist in the same agent's tool list.
 
 ## MCP (Model Context Protocol)
 
-MCP is an open standard that gives agents a consistent way to discover and interact with external capabilities — GitHub, AWS, databases, browser tools — through a standard protocol.
+MCP is an open standard that gives agents a consistent way to discover and interact with external capabilities (GitHub, AWS, databases, browser tools) through a standard protocol.
 
 ```python
 from mcp.client.streamable_http import streamablehttp_client
@@ -33,11 +33,11 @@ agent("What AWS services should I use for a serverless FastAPI backend?")
 
 ```
 
-📂 [mcp_http.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/03-mcp-tools/mcp_http.py) — Find all code on GitHub
+📂 [mcp_http.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/03-mcp-tools/mcp_http.py) - Find all code on GitHub
 
 ## Tool Filtering
 
-Too many tools → worse tool selection, hallucinated tool names, wasted context. Filter tools to only what your agent needs:
+Too many tools leads to worse tool selection, hallucinated tool names, and wasted context. Filter tools to only what your agent needs:
 
 ```python
 from strands.tools.mcp import MCPClient
@@ -59,7 +59,7 @@ agent = Agent(
 
 ```
 
-📂 [tool_filtering.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/03-mcp-tools/tool_filtering.py) — Find all code on GitHub
+📂 [tool_filtering.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/03-mcp-tools/tool_filtering.py) - Find all code on GitHub
 
 # Callbacks & Streaming
 
@@ -70,8 +70,30 @@ Callbacks control how agent output surfaces to users. The default handler stream
 A callback handler is a function that accepts `**kwargs`. It fires for every agent event (text chunks, tool calls, complete messages):
 
 ```python
-from strands import Agent
-from strands_tools import calculator
+from strands import Agent, tool
+
+@tool
+def calculator(a: float, b: float, operation: str = "add") -> str:
+    """Perform a math operation on two numbers.
+
+    Args:
+        a: First number
+        b: Second number
+        operation: One of "add", "subtract", "multiply", "divide", "power"
+    """
+    if operation == "add":
+        result = a + b
+    elif operation == "subtract":
+        result = a - b
+    elif operation == "multiply":
+        result = a * b
+    elif operation == "divide":
+        result = a / b if b != 0 else "Error: division by zero"
+    elif operation == "power":
+        result = a ** b
+    else:
+        result = f"Unknown operation: {operation}"
+    return str(result)
 
 def buffered_handler(**kwargs):
     # Only show complete messages, not individual streaming chunks
@@ -101,14 +123,36 @@ This is essential for sub-agents in multi-agent systems that run behind the scen
 
 ## Async Streaming (FastAPI)
 
-For async servers, use `agent.stream_async()` — an async generator that yields events:
+For async servers, use `agent.stream_async()`, an async generator that yields events:
 
 ```python
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from strands import Agent
-from strands_tools import calculator
+from strands import Agent, tool
+
+@tool
+def calculator(a: float, b: float, operation: str = "add") -> str:
+    """Perform a math operation on two numbers.
+
+    Args:
+        a: First number
+        b: Second number
+        operation: One of "add", "subtract", "multiply", "divide", "power"
+    """
+    if operation == "add":
+        result = a + b
+    elif operation == "subtract":
+        result = a - b
+    elif operation == "multiply":
+        result = a * b
+    elif operation == "divide":
+        result = a / b if b != 0 else "Error: division by zero"
+    elif operation == "power":
+        result = a ** b
+    else:
+        result = f"Unknown operation: {operation}"
+    return str(result)
 
 app = FastAPI()
 
@@ -129,11 +173,10 @@ async def stream_response(request: PromptRequest):
 
 ```
 
-📂 [fastapi_streaming.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/04-callbacks-streaming/fastapi_streaming.py) — Find all code on GitHub
+📂 [fastapi_streaming.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/04-callbacks-streaming/fastapi_streaming.py) - Find all code on GitHub
 
 ## Resources
 
 - 📖 [MCP Tools Docs](https://strandsagents.com/docs/user-guide/concepts/tools/mcp-tools/)
 - 📖 [Tools Overview](https://strandsagents.com/docs/user-guide/concepts/tools/)
 - 📖 [Callbacks](https://strandsagents.com/docs/user-guide/concepts/streaming/callback-handlers/)
-

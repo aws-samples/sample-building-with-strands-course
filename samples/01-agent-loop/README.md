@@ -12,7 +12,7 @@ The model reasons about what to do, optionally selects a tool, executes it, feed
 
 - **simple_agent.py** - The simplest possible agent: three lines of code to get a working conversational agent.
 - **agent_with_tools.py** - Adds tools and a system prompt. Demonstrates `agent.messages` for inspecting conversation history and `result.metrics` for token usage and latency.
-- **agent_with_defaults.py** - A fully loaded agent using Strands' opinionated defaults: built-in tools (`file_read`, `file_write`, `editor`, `shell`, `http_request`, `use_agent`), proactive context compression via `SummarizingConversationManager`, and the `ContextOffloader` plugin for handling large tool results.
+- **agent_with_defaults.py** - A fully loaded agent using Strands' opinionated defaults: vended tools (`file_editor`, `shell`, `web_fetch`) and `context_manager="auto"` for automatic offloading, compression, and proactive context management.
 
 ## Running
 
@@ -29,12 +29,11 @@ python agent_with_defaults.py
 - **Tools are decorated functions**: `@tool` plus a clear docstring is all the model needs. The docstring is the model's instruction manual - write it for the model, not just humans.
 - **System prompt**: Sets behavior and guardrails in natural language. Shapes the agent's personality across all interactions.
 - **The loop is inspectable**: `agent.messages` shows every step (user turns, assistant text, tool calls, tool results). `result.metrics` exposes cycle count and token usage - your first signal for cost and latency.
-- **Defaults**: Strands ships preconfigured defaults (tools, compression, offloading) so you can start capable and customize from there.
+- **Defaults**: Strands ships preconfigured defaults (vended tools, compression, offloading) so you can start capable and customize from there.
 
 ## Prerequisites
 
 - AWS credentials configured (Strands uses Bedrock by default)
-- `agent_with_defaults.py` requires `strands-agents-tools`: `pip install strands-agents-tools`
 
 ## Further Reading
 

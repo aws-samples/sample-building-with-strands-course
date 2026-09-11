@@ -1,7 +1,14 @@
+"""
+Context Strategy: Summarize with a Cheaper Model
+
+Summarizing history doesn't require your most capable model. You can pass a
+cheaper one via the SummarizeConfig to reduce costs. The main agent keeps using
+whatever model you configured; only the summarization LLM call uses the cheaper one.
+"""
+
 from strands import Agent, AgentSkills
 from strands.models import BedrockModel
-from strands.agent.conversation_manager import SummarizingConversationManager
-from strands.vended_plugins.context_offloader import ContextOffloader, FileStorage
+from strands.experimental.context_manager import ContextManager, Offload
 from customer_service_tools import lookup_customer, get_order_history, process_refund
 from steering_handlers import RefundWorkflowHandler, tone_handler
 
@@ -19,21 +26,9 @@ Important guidelines:
 
 skills_plugin = AgentSkills(skills=["./skills"])
 
-# Use a cheaper model for summarization with a custom prompt
-# that focuses on what matters for customer service conversations
-SUMMARIZATION_PROMPT = """Summarize the following customer service conversation.
-Focus on:
-- Customer identity (name, ID, account status)
-- The issue or request they came in with
-- Actions already taken (tools called, information retrieved)
-- Any unresolved problems or pending next steps
-"""
-
-summarizer = Agent(
-    model=BedrockModel(
-        model_id="us.anthropic.claude-haiku-4-20250514-v1:0",
-    ),
-    system_prompt=SUMMARIZATION_PROMPT,
+# Use a cheaper model for the summarization calls
+summarizer_model = BedrockModel(
+    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
 )
 
 agent = Agent(
@@ -42,20 +37,27 @@ agent = Agent(
         skills_plugin,
         RefundWorkflowHandler(),
         tone_handler,
-        ContextOffloader(
-            storage=FileStorage("./offloaded"),
-            max_result_tokens=8_000,
-            preview_tokens=2_000,
-        ),
     ],
     system_prompt=SYSTEM_PROMPT,
-    conversation_manager=SummarizingConversationManager(
-        summary_ratio=0.4,
-        preserve_recent_messages=8,
-        summarization_agent=summarizer,
-        proactive_compression={
-            "compression_threshold": 0.9,
-        },
+    # Custom summarization: use a cheaper model with a domain-specific prompt.
+    # The main agent still uses the default model for reasoning.
+    context_manager=ContextManager(
+        strategies=[
+            Offload.truncate("tool_results").when(threshold=2500),
+            Offload.summarize(
+                "*",
+                {
+                    "model": summarizer_model,
+                    "system_prompt": (
+                        "Summarize the following customer service conversation. "
+                        "Focus on: customer identity (name, ID, account status), "
+                        "the issue or request, actions already taken, and any "
+                        "unresolved problems or pending next steps."
+                    ),
+                },
+            ).when(utilization=0.85, preserve_recent=8),
+        ],
+        stash=False,
     ),
 )
 

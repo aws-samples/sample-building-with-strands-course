@@ -8,9 +8,9 @@ The alternative: specialize. Build focused agents that each do one thing well,
 then compose them. That's multi-agent.
 
 There are three patterns for this:
-  1. Agents as Tools — one orchestrator calls specialists like functions (this video)
-  2. Graph — explicit workflow with guaranteed execution order (next video)
-  3. Swarm — agents hand off to each other dynamically (after that)
+  1. Agents as Tools - one orchestrator calls specialists like functions (this video)
+  2. Graph - explicit workflow with guaranteed execution order (next video)
+  3. Swarm - agents hand off to each other dynamically (after that)
 
 Each solves different problems. We start here because agents as tools is the
 simplest, and for a lot of use cases it's the only one you need.
@@ -18,7 +18,7 @@ simplest, and for a lot of use cases it's the only one you need.
 
 from strands import Agent, tool
 from strands.models.bedrock import BedrockModel
-from strands_tools import http_request
+from strands.vended_tools.web_fetch import web_fetch
 
 
 # =============================================================================
@@ -28,7 +28,7 @@ from strands_tools import http_request
 # researcher = Agent(
 #     name="researcher",
 #     system_prompt="You are a research specialist. Find factual information and cite sources.",
-#     tools=[http_request],
+#     tools=[web_fetch],
 # )
 
 # writer = Agent(
@@ -41,10 +41,10 @@ from strands_tools import http_request
 
 
 # =============================================================================
-# Method 2: @tool decorator 
+# Method 2: @tool decorator
 # =============================================================================
-orchestrator_model = BedrockModel(model_id="us.anthropic.claude-opus-4-6-v1")
-specialist_model = BedrockModel(model_id="us.anthropic.claude-sonnet-4-20250514-v1:0")
+orchestrator_model = BedrockModel(model_id="us.anthropic.claude-opus-5")
+specialist_model = BedrockModel(model_id="us.anthropic.claude-sonnet-5")
 
 @tool
 def research_assistant(query: str, depth: str = "normal") -> str:
@@ -52,13 +52,13 @@ def research_assistant(query: str, depth: str = "normal") -> str:
 
     Args:
         query: The research question
-        depth: How thorough — "quick", "normal", or "deep"
+        depth: How thorough - "quick", "normal", or "deep"
     """
     try:
         research_agent = Agent(
             model=specialist_model,
             system_prompt=f"You are a research specialist. Research depth: {depth}.",
-            tools=[http_request],
+            tools=[web_fetch],
             callback_handler=None,
         )
         response = research_agent(query)

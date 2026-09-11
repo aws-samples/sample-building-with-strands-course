@@ -1,6 +1,8 @@
 # Building Agent Harnesses with Strands Agents
 
-This repo contains runnable code samples designed to be cloned and run in your own AWS account. Each folder in `samples/` covers a core concept of building AI agent harnesses - from the basic agent loop through multi-agent systems, evaluations, and production deployment.
+This repo contains runnable code samples designed to be cloned and run in your own AWS account. Each folder in `samples/` covers a core concept of building AI agent harnesses, from the basic agent loop through multi-agent systems, evaluations, and production deployment.
+
+> **About this repo:** Strands is an actively developed project. APIs, tools, and best practices evolve. This repo tracks those changes and always reflects current recommendations. The companion videos are a point-in-time snapshot: the concepts and patterns they teach are still valid, but specific imports or tool names in the code may differ from what you see in the videos. When in doubt, trust the code in this repo.
 
 ## What is Strands?
 
@@ -22,13 +24,13 @@ This course explores the agent framework in depth and touches on evaluations. Th
 ## Quick Start
 
 ```bash
-git clone https://github.com/morganwillisaws/strands-course.git
-cd strands-course
+git clone https://github.com/aws-samples/sample-building-with-strands-course.git
+cd sample-building-with-strands-course
 
 python3 -m venv .venv
 source .venv/bin/activate
 
-pip install strands-agents strands-agents-tools
+pip install strands-agents
 ```
 
 Then pick any sample and run it:
@@ -37,6 +39,8 @@ Then pick any sample and run it:
 cd samples/01-agent-loop
 python simple_agent.py
 ```
+
+> **Note on tools:** These samples use vended tools that ship with the `strands-agents` SDK (`strands.vended_tools`). This is the recommended way to get out-of-the-box tools like `file_editor`, `shell`, and `web_fetch`. No additional tool packages are needed to run the samples.
 
 ## Alternative Model Providers
 
@@ -61,7 +65,7 @@ See `samples/02-model-providers/` for examples of each.
 | `05-hooks` | Lifecycle hooks and safety guardrails |
 | `06-plugins-skills` | Plugins and on-demand skills |
 | `07-steering` | Steering handlers and workflow enforcement |
-| `08-conversation-management` | Context management and compression |
+| `08-context-management` | Context management and compression |
 | `09-persistent-memory` | Session managers for persistent memory |
 | `10-agents-as-tools` | Multi-agent: agents as tools |
 | `11-graphs` | Graphs and structured workflows |
@@ -120,7 +124,7 @@ Make sure you activated the virtual environment:
 
 ```bash
 source .venv/bin/activate
-pip install strands-agents strands-agents-tools
+pip install strands-agents
 ```
 
 ### AWS credentials not found?
@@ -153,7 +157,6 @@ More examples of deploying and operating agents with Amazon Bedrock AgentCore:
 
 - [Strands Shell](https://github.com/strands-agents/shell) - Sandboxed execution for agents
 - [Strands Evals](https://github.com/strands-agents/evals) - Chaos testing, red teaming, and evaluation suites
-- [Community Packages](https://strandsagents.com/docs/community/community-packages/) - Tools and integrations built by the community
 
 ## Links
 

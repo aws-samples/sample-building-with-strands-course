@@ -55,14 +55,13 @@ print(response)
 
 ```
 
-📂 [simple_agent.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/01-agent-loop/simple_agent.py) — Find all code examples in GitHub
+📂 [simple_agent.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/01-agent-loop/simple_agent.py) - Find all code examples in GitHub
 
 ## Code: Agent with Tools
 
 ```python
-import json
 from strands import Agent, tool
-from strands_tools import http_request, file_write
+from strands.vended_tools import file_editor, web_fetch
 
 @tool
 def query_product_database(query: str) -> str:
@@ -72,10 +71,10 @@ def query_product_database(query: str) -> str:
         query: Search query for products (e.g., "wireless headphones", "USB-C hub")
     """
     products = {
-        "wireless headphones": "SKU-WH100: Wireless Headphones Pro — $79.99, 142 in stock, 4.5★ rating, launched 2025-03",
-        "usb-c hub": "SKU-UC200: USB-C Hub 7-in-1 — $45.00, 89 in stock, 4.2★ rating, launched 2024-11",
-        "mechanical keyboard": "SKU-MK300: Mechanical Keyboard RGB — $149.99, 23 in stock, 4.8★ rating, launched 2025-01",
-        "noise cancelling": "SKU-NC400: Noise Cancelling Earbuds — $129.99, 67 in stock, 4.6★ rating, launched 2025-05",
+        "wireless headphones": "SKU-WH100: Wireless Headphones Pro - $79.99, 142 in stock, 4.5★ rating, launched 2025-03",
+        "usb-c hub": "SKU-UC200: USB-C Hub 7-in-1 - $45.00, 89 in stock, 4.2★ rating, launched 2024-11",
+        "mechanical keyboard": "SKU-MK300: Mechanical Keyboard RGB - $149.99, 23 in stock, 4.8★ rating, launched 2025-01",
+        "noise cancelling": "SKU-NC400: Noise Cancelling Earbuds - $129.99, 67 in stock, 4.6★ rating, launched 2025-05",
     }
     key = query.lower()
     matches = [info for product_key, info in products.items() if product_key in key]
@@ -87,12 +86,12 @@ SYSTEM_PROMPT = """You are a product research analyst. You help the team underst
 market positioning by comparing competitor pricing with our internal catalog.
 
 When given a research task:
-1. Use http_request to gather public market data
+1. Use web_fetch to gather public market data from the web
 2. Use query_product_database to check our internal pricing and inventory
-3. Write a brief competitive analysis and save it using file_write"""
+3. Write a brief competitive analysis and save it to report.md using file_editor"""
 
 agent = Agent(
-    tools=[http_request, file_write, query_product_database],
+    tools=[web_fetch, file_editor, query_product_database],
     system_prompt=SYSTEM_PROMPT,
 )
 
@@ -103,48 +102,38 @@ result = agent("Research what wireless headphones are trending on the market and
 
 Key concepts:
 
-- **@tool decorator** — turns any Python function into an agent-callable tool
+- **@tool decorator** turns any Python function into an agent-callable tool
 - **Docstrings** become the tool description the model sees
 - **Type hints** auto-generate the input schema
 - **System prompt** defines agent identity and behavior
 
-📂 [agent_with_tools.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/01-agent-loop/agent_with_tools.py) — Find all code examples in GitHub
+📂 [agent_with_tools.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/01-agent-loop/agent_with_tools.py) - Find all code examples in GitHub
 
 ## Out of the Box Agents
 
 Strands also ships preconfigured defaults that give you a capable agent out of the box:
 
-- **Built-in tools** — file operations, shell, search, web access
-- **Automatic context management** — proactive compression when the window fills
-- **Sub-agent delegation** — spawn child agents for subtasks
+- **Vended tools** for file operations, shell access, and web fetching
+- **Automatic context management** that offloads large results, compresses old messages, and fires proactive compression before the window fills
+- **Plugin system** for extending behavior
 
 You can start with these defaults and customize from there, or build from scratch using the primitives.
 
 ```python
 from strands import Agent
 from strands.models import BedrockModel
-from strands.agent.conversation_manager import SummarizingConversationManager
-from strands.vended_plugins.context_offloader import ContextOffloader, FileStorage
-from strands_tools import file_read, file_write, editor, shell, http_request, use_agent
+from strands.vended_tools import file_editor, shell
+from strands.vended_tools.web_fetch import web_fetch
 
 agent = Agent(
     model=BedrockModel(
-        model_id="us.anthropic.claude-sonnet-4-20250514-v1:0",
+        model_id="us.anthropic.claude-sonnet-5",
     ),
-    # Built-in tools for file ops, shell, web, and subagent delegation
-    tools=[file_read, file_write, editor, shell, http_request, use_agent],
-    # Proactive compression — summarizes context before hitting the limit
-    conversation_manager=SummarizingConversationManager(
-        proactive_compression={"compression_threshold": 0.9},
-    ),
-    # Offloads large tool results externally, keeps a preview in context
-    plugins=[
-        ContextOffloader(
-            storage=FileStorage("./offloaded"),
-            max_result_tokens=8_000,
-            preview_tokens=2_000,
-        ),
-    ],
+    # Vended tools for file ops, shell, and web fetching
+    tools=[file_editor, shell, web_fetch],
+    # Auto context management: offloads large tool results, compresses old
+    # messages into summaries, and fires proactive compression at 85% usage.
+    context_manager="auto",
 )
 
 # Give it a research task
@@ -152,7 +141,7 @@ agent("Research the current state of AI agent deployment patterns in production,
 
 ```
 
-📂 [agent_with_defaults.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/01-agent-loop/agent_with_defaults.py) — Find all code examples in GitHub
+📂 [agent_with_defaults.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/01-agent-loop/agent_with_defaults.py) - Find all code examples in GitHub
 
 ## Resources
 
@@ -160,4 +149,3 @@ agent("Research the current state of AI agent deployment patterns in production,
 - 📖 [Strands Agents MCP Server](https://strandsagents.com/docs/user-guide/build-with-ai/)
 - 📖 [Tools](https://strandsagents.com/docs/user-guide/concepts/tools/)
 - 📖 [Custom Tools](https://strandsagents.com/docs/user-guide/concepts/tools/custom-tools/)
-

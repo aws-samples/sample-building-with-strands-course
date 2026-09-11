@@ -13,8 +13,32 @@ Test with:
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from strands import Agent
-from strands_tools import calculator
+from strands import Agent, tool
+
+
+@tool
+def calculator(a: float, b: float, operation: str = "add") -> str:
+    """Perform a math operation on two numbers.
+
+    Args:
+        a: First number
+        b: Second number
+        operation: One of "add", "subtract", "multiply", "divide", "power"
+    """
+    if operation == "add":
+        result = a + b
+    elif operation == "subtract":
+        result = a - b
+    elif operation == "multiply":
+        result = a * b
+    elif operation == "divide":
+        result = a / b if b != 0 else "Error: division by zero"
+    elif operation == "power":
+        result = a ** b
+    else:
+        result = f"Unknown operation: {operation}"
+    return str(result)
+
 
 app = FastAPI()
 

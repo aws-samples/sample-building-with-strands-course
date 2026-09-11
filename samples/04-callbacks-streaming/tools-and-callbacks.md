@@ -73,13 +73,27 @@ A callback handler is a function that accepts `**kwargs`. It fires for every age
 from strands import Agent, tool
 
 @tool
-def calculator(expression: str) -> str:
-    """Evaluate a math expression and return the result.
+def calculator(a: float, b: float, operation: str = "add") -> str:
+    """Perform a math operation on two numbers.
 
     Args:
-        expression: A math expression like '1024 * 768' or '2 ** 16 - 1'
+        a: First number
+        b: Second number
+        operation: One of "add", "subtract", "multiply", "divide", "power"
     """
-    return str(eval(expression))
+    if operation == "add":
+        result = a + b
+    elif operation == "subtract":
+        result = a - b
+    elif operation == "multiply":
+        result = a * b
+    elif operation == "divide":
+        result = a / b if b != 0 else "Error: division by zero"
+    elif operation == "power":
+        result = a ** b
+    else:
+        result = f"Unknown operation: {operation}"
+    return str(result)
 
 def buffered_handler(**kwargs):
     # Only show complete messages, not individual streaming chunks
@@ -118,13 +132,27 @@ from pydantic import BaseModel
 from strands import Agent, tool
 
 @tool
-def calculator(expression: str) -> str:
-    """Evaluate a math expression and return the result.
+def calculator(a: float, b: float, operation: str = "add") -> str:
+    """Perform a math operation on two numbers.
 
     Args:
-        expression: A math expression like '1024 * 768' or '2 ** 16 - 1'
+        a: First number
+        b: Second number
+        operation: One of "add", "subtract", "multiply", "divide", "power"
     """
-    return str(eval(expression))
+    if operation == "add":
+        result = a + b
+    elif operation == "subtract":
+        result = a - b
+    elif operation == "multiply":
+        result = a * b
+    elif operation == "divide":
+        result = a / b if b != 0 else "Error: division by zero"
+    elif operation == "power":
+        result = a ** b
+    else:
+        result = f"Unknown operation: {operation}"
+    return str(result)
 
 app = FastAPI()
 

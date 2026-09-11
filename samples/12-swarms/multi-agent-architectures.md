@@ -41,8 +41,8 @@ from strands import Agent, tool
 from strands.models.bedrock import BedrockModel
 from strands.vended_tools.web_fetch import web_fetch
 
-orchestrator_model = BedrockModel(model_id="us.anthropic.claude-opus-4-6-v1")
-specialist_model = BedrockModel(model_id="us.anthropic.claude-sonnet-4-6")
+orchestrator_model = BedrockModel(model_id="us.anthropic.claude-opus-5")
+specialist_model = BedrockModel(model_id="us.anthropic.claude-sonnet-5")
 
 @tool
 def research_assistant(query: str, depth: str = "normal") -> str:

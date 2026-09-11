@@ -4,6 +4,8 @@ As conversations grow, they can overflow the model's context window. Context man
 
 The SDK ships two high-level presets (`"auto"` and `"agentic"`) that work out of the box, plus a `ContextManager` class with composable `Offload` strategies for when you need custom control.
 
+> **Note:** The custom strategy examples (`sliding_window.py`, `summarizing.py`, `custom_summarizer.py`) use `ContextManager` and `Offload` from `strands.experimental.context_manager`. These APIs are fully functional and will move to the main namespace in an upcoming release. The `context_manager="auto"` and `"agentic"` presets use the stable API.
+
 ## Files
 
 - **context_manager_auto.py** - The recommended default. One parameter (`context_manager="auto"`) gives you offloading, summarization, and proactive compression with no configuration. In benchmarks, this cut costs by 55% while improving accuracy.

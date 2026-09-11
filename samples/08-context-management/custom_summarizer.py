@@ -28,7 +28,7 @@ skills_plugin = AgentSkills(skills=["./skills"])
 
 # Use a cheaper model for the summarization calls
 summarizer_model = BedrockModel(
-    model_id="us.anthropic.claude-haiku-4-20250514-v1:0",
+    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
 )
 
 agent = Agent(

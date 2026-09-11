@@ -5,7 +5,7 @@ from strands.vended_tools.web_fetch import web_fetch
 
 agent = Agent(
     model=BedrockModel(
-        model_id="us.anthropic.claude-sonnet-4-20250514-v1:0",
+        model_id="us.anthropic.claude-sonnet-4-6",
     ),
     # Vended tools for file ops, shell, and web fetching
     tools=[file_editor, shell, web_fetch],

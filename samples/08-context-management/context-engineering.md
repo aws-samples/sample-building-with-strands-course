@@ -143,7 +143,7 @@ Summarizing history doesn't require your most capable model. Pass a cheaper one 
 from strands.models import BedrockModel
 from strands.experimental.context_manager import ContextManager, Offload
 
-summarizer_model = BedrockModel(model_id="us.anthropic.claude-haiku-4-20250514-v1:0")
+summarizer_model = BedrockModel(model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0")
 
 agent = Agent(
     tools=[...],

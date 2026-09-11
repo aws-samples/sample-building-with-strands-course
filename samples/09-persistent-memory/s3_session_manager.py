@@ -32,7 +32,7 @@ agent = Agent(
         tone_handler,
     ],
     system_prompt=SYSTEM_PROMPT,
-    conversation_manager="auto",
+    context_manager="auto",
     session_manager=session_manager,
 )
 

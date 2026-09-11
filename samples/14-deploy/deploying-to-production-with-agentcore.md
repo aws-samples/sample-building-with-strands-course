@@ -12,7 +12,6 @@ Add `BedrockAgentCoreApp` and an entrypoint:
 
 ```python
 from strands import Agent
-from strands.agent.conversation_manager import SlidingWindowConversationManager
 from bedrock_agentcore.runtime import BedrockAgentCoreApp
 from bedrock_agentcore.memory.integrations.strands.config import (
     AgentCoreMemoryConfig, RetrievalConfig
@@ -47,7 +46,7 @@ def create_agent(actor_id: str, session_id: str):
         tools=[lookup_customer, get_order_history, process_refund],
         plugins=[AgentSkills(skills=["./skills"]), RefundWorkflowHandler(), tone_handler],
         system_prompt=SYSTEM_PROMPT,
-        conversation_manager=SlidingWindowConversationManager(window_size=20),
+        context_manager="auto",
         session_manager=session_manager,
     )
 

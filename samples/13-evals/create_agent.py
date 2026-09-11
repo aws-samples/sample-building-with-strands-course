@@ -40,7 +40,7 @@ def create_customer_service_agent(**kwargs):
             tone_handler,
         ],
         system_prompt=SYSTEM_PROMPT,
-        conversation_manager="auto",
+        context_manager="auto",
     )
     defaults.update(kwargs)
 

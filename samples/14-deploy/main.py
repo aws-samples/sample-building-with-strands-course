@@ -74,7 +74,7 @@ def create_customer_service_agent(actor_id: str, session_id: str | None = None):
                 tone_handler,
             ],
             system_prompt=SYSTEM_PROMPT,
-            conversation_manager="auto",
+            context_manager="auto",
             session_manager=session_manager,
         )
 

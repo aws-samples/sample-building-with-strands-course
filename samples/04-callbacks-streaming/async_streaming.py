@@ -7,8 +7,18 @@ where you need to stream responses to clients.
 """
 
 import asyncio
-from strands import Agent
-from strands_tools import calculator
+from strands import Agent, tool
+
+
+@tool
+def calculator(expression: str) -> str:
+    """Evaluate a math expression and return the result.
+
+    Args:
+        expression: A math expression like '256 + 256' or '2 ** 16 - 1'
+    """
+    return str(eval(expression))
+
 
 # callback_handler=None so the default handler doesn't also print
 agent = Agent(

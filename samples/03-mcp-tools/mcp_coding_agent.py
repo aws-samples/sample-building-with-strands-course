@@ -7,7 +7,7 @@ to give the agent access to AWS capabilities.
 from mcp.client.streamable_http import streamablehttp_client
 from strands import Agent
 from strands.tools.mcp import MCPClient
-from strands_tools import file_read, editor, shell
+from strands.vended_tools import file_editor, shell
 
 # Connect to the AWS MCP server (streamable HTTP)
 aws_mcp = MCPClient(
@@ -20,7 +20,7 @@ and service details when answering questions about building on AWS.
 Be concise and actionable in your recommendations."""
 
 agent = Agent(
-    tools=[aws_mcp, file_read, editor, shell],
+    tools=[aws_mcp, file_editor, shell],
     system_prompt=SYSTEM_PROMPT,
 )
 

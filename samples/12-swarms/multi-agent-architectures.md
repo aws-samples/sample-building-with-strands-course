@@ -10,18 +10,18 @@ Strands provides three composable multi-agent patterns. Each solves a different 
 
 ## Agents as Tools
 
-Wrap one agent as a tool for another. Each specialist gets its own isolated context window — great for noisy tools that would pollute the orchestrator's context.
+Wrap one agent as a tool for another. Each specialist gets its own isolated context window, great for noisy tools that would pollute the orchestrator's context.
 
 ### Pass Agent Directly
 
 ```python
 from strands import Agent
-from strands_tools import http_request
+from strands.vended_tools.web_fetch import web_fetch
 
 researcher = Agent(
     name="researcher",
     system_prompt="You are a research specialist. Find factual information.",
-    tools=[http_request],
+    tools=[web_fetch],
 )
 
 writer = Agent(
@@ -39,7 +39,7 @@ writer("Research the FastAPI GitHub repo and write a 3-sentence summary.")
 ```python
 from strands import Agent, tool
 from strands.models.bedrock import BedrockModel
-from strands_tools import http_request
+from strands.vended_tools.web_fetch import web_fetch
 
 orchestrator_model = BedrockModel(model_id="us.anthropic.claude-opus-4-6-v1")
 specialist_model = BedrockModel(model_id="us.anthropic.claude-sonnet-4-20250514-v1:0")
@@ -50,12 +50,12 @@ def research_assistant(query: str, depth: str = "normal") -> str:
 
     Args:
         query: The research question
-        depth: How thorough — "quick", "normal", or "deep"
+        depth: How thorough - "quick", "normal", or "deep"
     """
     research_agent = Agent(
         model=specialist_model,
         system_prompt=f"You are a research specialist. Research depth: {depth}.",
-        tools=[http_request],
+        tools=[web_fetch],
         callback_handler=None,  # Run silently
     )
     response = research_agent(query)
@@ -69,9 +69,9 @@ writer = Agent(
 
 ```
 
-📂 [agent_as_tool.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/10-agents-as-tools/agent_as_tool.py) — Find all code on GitHub
+📂 [agent_as_tool.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/10-agents-as-tools/agent_as_tool.py) - Find all code on GitHub
 
-Data flow: orchestrator sends a string → specialist runs its own loop → returns a string. Context resets between calls (isolation).
+Data flow: orchestrator sends a string, specialist runs its own loop, returns a string. Context resets between calls (isolation).
 
 ## Graph
 
@@ -80,12 +80,12 @@ Graphs give you explicit control over execution order. Each node is a full agent
 ```python
 from strands import Agent
 from strands.multiagent import GraphBuilder
-from strands_tools import http_request
+from strands.vended_tools.web_fetch import web_fetch
 
 researcher = Agent(
     name="researcher",
     system_prompt="Gather comprehensive information from the web.",
-    tools=[http_request],
+    tools=[web_fetch],
 )
 
 analyst = Agent(
@@ -121,7 +121,7 @@ result = graph("Research the impact of AI on healthcare")
 
 ```
 
-📂 [basic_graph.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/11-graphs/basic_graph.py) — Find all code on GitHub
+📂 [basic_graph.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/11-graphs/basic_graph.py) - Find all code on GitHub
 
 Data flow: entry nodes receive the original task. Downstream nodes receive the original task + labeled outputs from dependencies. Use `invocation_state` for metadata (user IDs, feature flags) not exposed to models.
 
@@ -175,11 +175,11 @@ result = debugging_swarm(
 
 ```
 
-📂 [debugging_swarm.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/12-swarms/debugging_swarm.py) — Find all code on GitHub
+📂 [debugging_swarm.py](https://github.com/aws-samples/sample-building-with-strands-course/tree/main/samples/12-swarms/debugging_swarm.py) - Find all code on GitHub
 
 Key differences: handoff = full transfer of control (not a function call). Agents share accumulated context. Strands injects `handoff_to_agent` tool automatically.
 
-**Safety controls** — always configure these or swarms can ping-pong forever:
+**Safety controls** - always configure these or swarms can ping-pong forever:
 
 | Setting | Purpose |
 | --- | --- |
@@ -200,4 +200,3 @@ These patterns nest: a swarm can be a node in a graph, a graph can contain agent
 - 📖 [Graph Workflows](https://strandsagents.com/docs/user-guide/concepts/multi-agent/graph/)
 - 📖 [Swarms](https://strandsagents.com/docs/user-guide/concepts/multi-agent/swarm/)
 - 📖 [Workflow (Deterministic Pipelines)](https://strandsagents.com/docs/user-guide/concepts/multi-agent/workflow/)
-

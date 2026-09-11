@@ -13,8 +13,18 @@ Test with:
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from strands import Agent
-from strands_tools import calculator
+from strands import Agent, tool
+
+
+@tool
+def calculator(expression: str) -> str:
+    """Evaluate a math expression and return the result.
+
+    Args:
+        expression: A math expression like '1024 * 768' or '2 ** 16 - 1'
+    """
+    return str(eval(expression))
+
 
 app = FastAPI()
 

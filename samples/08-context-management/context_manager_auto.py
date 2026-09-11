@@ -12,12 +12,13 @@ while accuracy went from 68% to 98%. Half the tokens, better results.
 """
 
 from strands import Agent
-from strands_tools import file_read, file_write, editor, shell, http_request
+from strands.vended_tools import file_editor, shell
+from strands.vended_tools.web_fetch import web_fetch
 
 # That's it. One parameter replaces manual configuration of thresholds,
 # summary ratios, compression timing, and offloader setup.
 agent = Agent(
-    tools=[file_read, file_write, editor, shell, http_request],
+    tools=[file_editor, shell, web_fetch],
     context_manager="auto",
     system_prompt="You are a helpful coding assistant.",
 )

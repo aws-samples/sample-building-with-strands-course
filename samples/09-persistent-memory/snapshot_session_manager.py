@@ -1,5 +1,17 @@
+"""
+Snapshot Session Manager
+
+The recommended approach for new single-agent sessions. Instead of writing
+individual message records, SnapshotSessionManager persists the entire agent
+as a single atomic JSON blob on each save. This is simpler, faster, and
+supports immutable checkpoints you can restore to.
+
+Run it twice to see it restore the previous conversation.
+"""
+
 from strands import Agent, AgentSkills
-from strands.session.file_session_manager import FileSessionManager
+from strands.session import SnapshotSessionManager
+from strands.storage import LocalFileStorage
 from customer_service_tools import lookup_customer, get_order_history, process_refund
 from steering_handlers import RefundWorkflowHandler, tone_handler
 
@@ -21,9 +33,11 @@ Important guidelines:
 
 skills_plugin = AgentSkills(skills=["./skills"])
 
-session_manager = FileSessionManager(
+# SnapshotSessionManager uses the unified Storage backend.
+# LocalFileStorage for dev, S3Storage for production.
+session_manager = SnapshotSessionManager(
     session_id="customer-session-001",
-    storage_dir="./sessions",
+    storage=LocalFileStorage("./sessions"),
 )
 
 agent = Agent(
@@ -38,7 +52,7 @@ agent = Agent(
     session_manager=session_manager,
 )
 
-print("Customer Service Agent with Persistence (type 'quit' to exit)")
+print("Customer Service Agent with Snapshot Persistence (type 'quit' to exit)")
 print("-" * 60)
 print(f"Session: {session_manager.session_id}")
 print(f"Restored messages: {len(agent.messages)}")

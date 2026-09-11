@@ -1,6 +1,15 @@
+"""
+Context Strategy: Truncate (Drop Oldest)
+
+The simplest approach to context management: when the context window fills up,
+remove the oldest messages. Fast, predictable, and where most agents start.
+
+This uses the new ContextManager with an Offload.truncate strategy that removes
+old messages when utilization hits the threshold, keeping the most recent ones.
+"""
+
 from strands import Agent, AgentSkills
-from strands.agent.conversation_manager import SlidingWindowConversationManager
-from strands.vended_plugins.context_offloader import ContextOffloader, FileStorage
+from strands.experimental.context_manager import ContextManager, Offload
 from customer_service_tools import lookup_customer, get_order_history, process_refund
 from steering_handlers import RefundWorkflowHandler, tone_handler
 
@@ -24,23 +33,20 @@ agent = Agent(
         skills_plugin,
         RefundWorkflowHandler(),
         tone_handler,
-        ContextOffloader(
-            storage=FileStorage("./offloaded"),
-            max_result_tokens=8_000,
-            preview_tokens=2_000,
-        ),
     ],
     system_prompt=SYSTEM_PROMPT,
-    conversation_manager=SlidingWindowConversationManager(
-        window_size=20,
-        should_truncate_results=True,
-        proactive_compression={
-            "compression_threshold": 0.9,
-        },
+    # Truncate strategy: when context hits 90% full, remove the oldest messages
+    # while preserving the 10 most recent. Large tool results (>2500 tokens)
+    # are truncated to a preview immediately.
+    context_manager=ContextManager(
+        strategies=[
+            Offload.truncate("tool_results").when(threshold=2500),
+            Offload.truncate("*").when(utilization=0.9, preserve_recent=10),
+        ],
     ),
 )
 
-print("Customer Service Agent with Sliding Window (type 'quit' to exit)")
+print("Customer Service Agent with Truncate Strategy (type 'quit' to exit)")
 print("-" * 60)
 
 while True:

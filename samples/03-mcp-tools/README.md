@@ -1,6 +1,6 @@
 # Tools and MCP
 
-Tools give agents the ability to take actions and access information beyond what's in the model's training data. Strands supports three sources of tools: custom `@tool` functions you write, built-in tools from `strands-agents-tools`, and MCP (Model Context Protocol) servers that expose capabilities over a standard interface.
+Tools give agents the ability to take actions and access information beyond what's in the model's training data. Strands supports three sources of tools: custom `@tool` functions you write, vended tools built into the SDK, and MCP (Model Context Protocol) servers that expose capabilities over a standard interface.
 
 MCP is particularly powerful because it lets you connect agents to externally managed tool servers - the agent discovers available tools dynamically at runtime rather than having them hardcoded.
 
@@ -26,12 +26,11 @@ python tool_executor.py
 - **Tool discovery**: Agents learn what tools are available at runtime from the MCP server's tool list - no hardcoding needed.
 - **Tool filtering**: In production, restrict which tools an agent can access using `tool_filters`. Only expose what the agent actually needs.
 - **Security boundary**: Tools execute with the permissions of the host process. If you give an agent the shell tool, you've given it access to your machine. With MCP, you're giving tools someone else controls to your agent. Be thoughtful about what you connect. For sandboxed execution, check out [Strands Shell](https://github.com/strands-agents/shell) which gives agents isolated filesystem and network access.
-- **Coexistence**: Custom tools, built-in tools, and MCP tools can all live in the same agent's tool list.
+- **Coexistence**: Custom tools, vended tools, and MCP tools can all live in the same agent's tool list.
 
 ## Prerequisites
 
 - MCP HTTP examples require network access to reach the remote AWS MCP server
-- `mcp_coding_agent.py` requires `strands-agents-tools`: `pip install strands-agents-tools`
 - Local stdio MCP servers are spawned as subprocesses - check that any required servers are installed
 
 ## Further Reading

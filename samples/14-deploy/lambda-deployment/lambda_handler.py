@@ -14,7 +14,6 @@ from pydantic import BaseModel
 
 from strands import Agent
 from strands.vended_plugins.skills.agent_skills import AgentSkills
-from strands.agent.conversation_manager import SummarizingConversationManager
 from customer_service_tools import lookup_customer, get_order_history, process_refund
 from steering_handlers import RefundWorkflowHandler, tone_handler
 
@@ -36,15 +35,11 @@ SKILLS_DIR = os.path.join(os.path.dirname(__file__), "skills")
 
 skills_plugin = AgentSkills(skills=[SKILLS_DIR])
 
-# Note: once strands-agents supports context_manager="auto" on PyPI,
-# replace the SummarizingConversationManager with just: conversation_manager="auto"
 agent = Agent(
     tools=[lookup_customer, get_order_history, process_refund],
     plugins=[skills_plugin, RefundWorkflowHandler(), tone_handler],
     system_prompt=SYSTEM_PROMPT,
-    conversation_manager=SummarizingConversationManager(
-        proactive_compression={"compression_threshold": 0.85},
-    ),
+    context_manager="auto",
     callback_handler=None,
 )
 

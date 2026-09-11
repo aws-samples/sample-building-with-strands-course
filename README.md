@@ -6,9 +6,9 @@ This repo contains runnable code samples designed to be cloned and run in your o
 
 ## What is Strands?
 
-[Strands](https://strandsagents.com) is an open-source agent harness toolkit from AWS. It's available in both Python and TypeScript. It includes:
+[Strands](https://strandsagents.com) is an open-source agent building toolkit from AWS. It includes:
 
-- **Strands Agents** - The agent framework. Build the loop, connect tools, add hooks, manage context, compose multi-agent systems. This is what the course focuses on.
+- **Strands Harness SDK** - The agent harness building framework. Build the loop, connect tools, add hooks, manage context, compose multi-agent systems. This is what the course focuses on.
 - **Strands Evals** - Evaluate agent quality with LLM-as-a-judge, trajectory validation, chaos testing, and red teaming.
 - **Strands Shell** - Sandboxed execution environments for agents that need filesystem and network access.
 - **Strands MCP Server** - Expose your Strands agents as [MCP tool servers](https://strandsagents.com/docs/user-guide/quickstart/python/#strands-mcp-server-optional) so other agents and tools can call them.

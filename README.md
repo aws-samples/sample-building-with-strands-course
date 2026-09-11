@@ -24,8 +24,8 @@ This course explores the agent framework in depth and touches on evaluations. Th
 ## Quick Start
 
 ```bash
-git clone https://github.com/morganwillisaws/strands-course.git
-cd strands-course
+git clone https://github.com/aws-samples/sample-building-with-strands-course.git
+cd sample-building-with-strands-course
 
 python3 -m venv .venv
 source .venv/bin/activate

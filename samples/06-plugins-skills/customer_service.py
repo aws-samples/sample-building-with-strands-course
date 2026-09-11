@@ -4,13 +4,13 @@ from strands import Agent, AgentSkills, tool
 
 CUSTOMERS = {
     "C-1001": {
-        "name": "Morgan Williams",
+        "name": "Sarah Johnson",
         "email": "example@example.com",
         "phone": "555-0142",
         "account_status": "active",
     },
     "C-1002": {
-        "name": "Morgan Willis",
+        "name": "Mike Chen",
         "email": "example@example.com",
         "phone": "555-0198",
         "account_status": "locked",

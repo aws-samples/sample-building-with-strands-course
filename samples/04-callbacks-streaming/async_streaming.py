@@ -17,6 +17,8 @@ def calculator(expression: str) -> str:
     Args:
         expression: A math expression like '256 + 256' or '2 ** 16 - 1'
     """
+    # NOTE: eval() is used here for simplicity in this demo.
+    # Do not use eval() with untrusted input in production.
     return str(eval(expression))
 
 

@@ -1,5 +1,9 @@
 # Plugins and Skills
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
 Plugins and skills are two composition patterns that help manage agent complexity as your system grows.
 
 **Plugins** bundle tools, hooks, and initialization logic into reusable packages. Instead of manually wiring up multiple related components, you install a plugin and it handles the setup.
@@ -34,5 +38,5 @@ Then try asking things like:
 
 ## Further Reading
 
-- [Strands Agents: Plugins](https://strandsagents.com/docs/user-guide/concepts/plugins/)
+- [Strands Agents: Plugins](https://strandsagents.com/docs/user-guide/sdk/plugins/)
 - [Hands-on Workshop: Module 3 (Skills + Steering)](https://catalog.us-east-1.prod.workshops.aws/workshops/083b80d7-5a90-402b-9bb4-19fb53092808/en-US/03-skills-steering)

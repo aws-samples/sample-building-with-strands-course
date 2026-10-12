@@ -1,16 +1,31 @@
 # Context Management
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
+> [!WARNING]
+> **Changed since recording:** The video uses `SummarizingConversationManager` and `ContextOffloader`. The updated starting point is `context_manager="auto"`. For custom behavior, use `ContextManager` and `Offload` from `strands.experimental.context_manager`, as shown below. Truncation keeps previews; it does not simply drop whole messages.
+
 As conversations grow, they can overflow the model's context window. Context management controls what happens when messages accumulate. You can truncate old messages, summarize them, or use a cheaper model for the summarization to save costs.
 
 The SDK ships two high-level presets (`"auto"` and `"agentic"`) that work out of the box, plus a `ContextManager` class with composable `Offload` strategies for when you need custom control.
 
-> **Note:** The custom strategy examples (`sliding_window.py`, `summarizing.py`, `custom_summarizer.py`) use `ContextManager` and `Offload` from `strands.experimental.context_manager`. These APIs are fully functional and will move to the main namespace in an upcoming release. The `context_manager="auto"` and `"agentic"` presets use the stable API.
+> **Note:** The custom strategy examples (`sliding_window.py`, `summarizing.py`, `custom_summarizer.py`) use `ContextManager` and `Offload` from `strands.experimental.context_manager`. Keep those imports for the custom examples. The `context_manager="auto"` and `"agentic"` presets use the stable API.
+
+## Setup
+
+These examples use web fetching. Install its optional dependencies:
+
+```bash
+pip install "strands-agents[web-fetch]==1.59.0"
+```
 
 ## Files
 
-- **context_manager_auto.py** - The recommended default. One parameter (`context_manager="auto"`) gives you offloading, summarization, and proactive compression with no configuration. In benchmarks, this cut costs by 55% while improving accuracy.
+- **context_manager_auto.py** - The recommended default. One parameter (`context_manager="auto"`) gives you offloading, summarization, and proactive compression with no configuration.
 - **context_manager_agentic.py** - For agents that need to decide what context to keep. The model gets tools to summarize, truncate, or pin messages. Use this when your agent needs to protect specific context across long conversations.
-- **sliding_window.py** - Uses `ContextManager` with `Offload.truncate` strategies. Truncates large tool results and drops the oldest messages when context fills up. Simplest custom approach.
+- **sliding_window.py** - Uses `ContextManager` with `Offload.truncate` strategies. Truncates large tool results and older content to previews when context fills up. Simplest custom approach.
 - **summarizing.py** - Uses `ContextManager` with `Offload.summarize` strategies. Summarizes old messages instead of dropping them. Preserves key information while reducing token count.
 - **custom_summarizer.py** - Uses a cheaper model (Haiku) for the summarization strategy to reduce costs. Demonstrates passing a custom model and system prompt to the summarize strategy.
 - **customer_service_tools.py** - Mock tools shared across examples.
@@ -46,5 +61,5 @@ Have a long conversation and watch how each strategy handles the growing history
 
 ## Further Reading
 
-- [Strands Agents: Context Management](https://strandsagents.com/docs/user-guide/concepts/context-management/)
+- [Strands Agents: Context Management](https://strandsagents.com/docs/user-guide/sdk/context-management/)
 - [Hands-on Workshop: Build Your First Agent](https://catalog.us-east-1.prod.workshops.aws/workshops/083b80d7-5a90-402b-9bb4-19fb53092808/en-US)

@@ -1,13 +1,15 @@
 import json
 import logging
 import os
+from pathlib import Path
+from threading import Lock
 from strands import Agent
 from strands.vended_plugins.skills.agent_skills import AgentSkills
 from bedrock_agentcore.runtime import BedrockAgentCoreApp
 from bedrock_agentcore.memory.integrations.strands.config import AgentCoreMemoryConfig, RetrievalConfig
 from bedrock_agentcore.memory.integrations.strands.session_manager import AgentCoreMemorySessionManager
 from customer_service_tools import lookup_customer, get_order_history, process_refund
-from steering_handlers import RefundWorkflowHandler, tone_handler
+from steering_handlers import RefundWorkflowHandler, ToneGuardrailHandler
 
 logger = logging.getLogger(__name__)
 
@@ -35,9 +37,11 @@ Important guidelines:
 - Never show internal IDs, system formats, or example data to the customer.
 - Be warm but efficient. Customers want their problem solved, not a long conversation."""
 
-skills_plugin = AgentSkills(skills=["./skills"])
+SKILLS_DIR = str(Path(__file__).parent / "skills")
 
 _agent = None
+_agent_key = None
+_agent_lock = Lock()
 
 # ============================================================
 # Build the Agent
@@ -45,8 +49,12 @@ _agent = None
 def create_customer_service_agent(actor_id: str, session_id: str | None = None):
     """Create the customer service agent with AgentCore Memory."""
 
-    global _agent
+    global _agent, _agent_key
     
+    key = (actor_id, session_id)
+    if _agent is not None and _agent_key != key:
+        raise ValueError("Use a different runtime session for each actor and conversation")
+
     if _agent is None:
 
         session_manager = None
@@ -69,14 +77,16 @@ def create_customer_service_agent(actor_id: str, session_id: str | None = None):
         _agent = Agent(
             tools=[lookup_customer, get_order_history, process_refund],
             plugins=[
-                skills_plugin,
+                AgentSkills(skills=[SKILLS_DIR]),
                 RefundWorkflowHandler(),
-                tone_handler,
+                ToneGuardrailHandler(),
             ],
             system_prompt=SYSTEM_PROMPT,
             context_manager="auto",
             session_manager=session_manager,
         )
+
+        _agent_key = key
 
     return _agent
 
@@ -92,23 +102,28 @@ def invoke(payload, context):
     # Try to parse structured fields from the prompt
     try:
         parsed = json.loads(raw_prompt)
-        prompt = parsed.get("prompt")
-        actor_id = parsed.get("actor_id")
+        if isinstance(parsed, dict):
+            prompt = parsed.get("prompt")
+            actor_id = parsed.get("actor_id")
+        else:
+            prompt = raw_prompt
+            actor_id = payload.get("actor_id")
     except (TypeError, json.JSONDecodeError):
         prompt = raw_prompt
         actor_id = payload.get("actor_id")
 
-    if not prompt:
+    if not isinstance(prompt, str) or not prompt.strip():
         raise ValueError("Missing required field: prompt")
-    if not actor_id:
+    if not isinstance(actor_id, str) or not actor_id.strip():
         raise ValueError("Missing required field: actor_id")
     if not session_id:
         raise ValueError("Missing required field: session_id (pass via --session-id)")
 
     logger.info(f"invoke: actor_id={actor_id}, session_id={session_id}, prompt={prompt[:50]}")
 
-    agent = create_customer_service_agent(actor_id=actor_id, session_id=session_id)
-    response = agent(prompt)
+    with _agent_lock:
+        agent = create_customer_service_agent(actor_id=actor_id, session_id=session_id)
+        response = agent(prompt)
 
     return {"response": str(response)}
 

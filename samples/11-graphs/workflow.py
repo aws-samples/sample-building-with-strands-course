@@ -10,6 +10,7 @@ see basic_graph.py which uses GraphBuilder.
 """
 
 from strands import Agent
+from strands.vended_tools.web_fetch import web_fetch
 
 
 # =============================================================================
@@ -20,6 +21,7 @@ from strands import Agent
 # =============================================================================
 
 researcher = Agent(
+    tools=[web_fetch],
     system_prompt="You are a research specialist. Find key information and cite sources.",
     callback_handler=None,
 )

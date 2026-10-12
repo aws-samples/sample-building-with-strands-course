@@ -3,7 +3,7 @@ name = "myagent"
 version = "0.1.0"
 requires-python = ">=3.10"
 dependencies = [
-    "strands-agents>=1.40.0",
+    "strands-agents>=1.59.0,<2",
     "bedrock-agentcore[memory]",
     "opentelemetry-instrumentation",
     "aws-opentelemetry-distro",

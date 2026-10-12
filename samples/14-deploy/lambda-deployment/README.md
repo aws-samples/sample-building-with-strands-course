@@ -63,17 +63,19 @@ sam delete --stack-name customer-service-agent
 
 ## Adding Session Persistence
 
-The basic deployment above is stateless. Each invocation starts fresh. To add persistence:
+The basic deployment above is stateless. Each request creates a fresh agent and fresh
+plugins, including when Lambda reuses a warm execution environment. To add persistence:
 
 1. Create a DynamoDB table for sessions
-2. Use `DynamoDBSessionManager` from Strands (or write a custom one)
-3. Pass a session ID in the request payload and use it to load/save state
+2. Install `strands-dynamodb-storage` and use `SnapshotSessionManager` with `DynamoDBStorage`
+3. Bind the session ID to the authenticated caller and use it to load/save state
 
 This is what AgentCore handles automatically. On Lambda, you wire it yourself.
 
 ## Limitations
 
-- 15-minute execution limit (long multi-turn conversations may time out)
+- This template sets a 120-second Lambda timeout; synchronous API Gateway requests
+  have their own integration timeout, which can expire before the function finishes.
 - Cold starts add latency on first invocation
 - No built-in session isolation between concurrent users
 - You manage auth, memory, and observability separately

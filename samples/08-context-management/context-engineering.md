@@ -1,5 +1,12 @@
 # Context Engineering
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
+> [!WARNING]
+> **Changed since recording:** The video uses `SummarizingConversationManager` and `ContextOffloader`. The updated starting point is `context_manager="auto"`. For custom behavior, use `ContextManager` and `Offload` from `strands.experimental.context_manager`, as shown below. Truncation keeps previews; it does not simply drop whole messages.
+
 Context engineering is the discipline of deciding **what information enters the model's context window, when, and in what form**. Unlike prompt engineering (which focuses on instructions), context engineering ensures the model has the right data at the right time without overflowing the window or wasting tokens.
 
 Context engineering breaks down into four categories:
@@ -8,7 +15,7 @@ Context engineering breaks down into four categories:
 | --- | --- | --- |
 | **Select** | Choose what enters context, inject relevant info, filter out noise | ContextInjector plugin |
 | **Compress** | Shrink what's already in context, summarize history, truncate results | ContextManager strategies (truncate, summarize, drop) |
-| **Isolate** | Separate concerns, give sub-agents their own context windows | Multi-agent patterns, `context_manager="agentic"` |
+| **Isolate** | Separate concerns, give sub-agents their own context windows | Multi-agent patterns with separate agent contexts |
 | **Externalize** | Move large data out of context, store externally, keep compact reference | ContextManager stash + retrieval tool |
 
 ## The One-Line Default: context_manager="auto"
@@ -32,7 +39,7 @@ In benchmarks on real code investigation tasks: **costs dropped 55% while accura
 
 For agents that need to protect specific context across long conversations, use `context_manager="agentic"` and the model gets tools to summarize, truncate, or pin messages itself.
 
-📖 [Context Management docs](https://strandsagents.com/docs/user-guide/concepts/context-management/)
+📖 [Context Management docs](https://strandsagents.com/docs/user-guide/sdk/context-management/)
 
 ## Context Injector
 
@@ -59,7 +66,7 @@ Control **when** injection fires:
 - `trigger="everyTurn"` - before every model call including mid-task tool-result turns
 - Custom predicate - `trigger=lambda context: context.state.get("recall_enabled") is True`
 
-📖 [Context Injector docs](https://strandsagents.com/docs/user-guide/concepts/plugins/context-injector/)
+📖 [Context Injector docs](https://strandsagents.com/docs/user-guide/sdk/plugins/context-injector/)
 
 ## ContextManager and Offload Strategies
 
@@ -78,6 +85,8 @@ There are three types of Offload strategies:
 Each strategy takes a **target** that controls what content it operates on:
 
 ```python
+from strands.experimental.context_manager import Offload
+
 Offload.summarize("*")                   # everything: all message types
 Offload.truncate("tool_results")         # only successful tool results
 Offload.drop("tool_result_errors")       # only errored tool results
@@ -92,16 +101,15 @@ And `.when(...)` sets the conditions:
 - `utilization=0.85` - fire when context window is 85% full (per-message mode)
 - `preserve_recent=N` - skip the N most recent matching messages
 
-### Truncate Strategy (Drop Oldest)
+### Truncate Strategy (Keep Previews)
 
-The simplest approach. Remove old messages when context gets full:
+Truncate matching content to head/tail previews when context gets full:
 
 ```python
 from strands import Agent
 from strands.experimental.context_manager import ContextManager, Offload
 
 agent = Agent(
-    tools=[...],
     context_manager=ContextManager(
         strategies=[
             Offload.truncate("tool_results").when(threshold=2500),
@@ -119,10 +127,10 @@ agent = Agent(
 Instead of dropping old messages, compress them into summaries. Preserves more information but summaries are lossy:
 
 ```python
+from strands import Agent
 from strands.experimental.context_manager import ContextManager, Offload
 
 agent = Agent(
-    tools=[...],
     context_manager=ContextManager(
         strategies=[
             Offload.truncate("tool_results").when(threshold=2500),
@@ -140,13 +148,13 @@ agent = Agent(
 Summarizing history doesn't require your most capable model. Pass a cheaper one via the config dict:
 
 ```python
+from strands import Agent
 from strands.models import BedrockModel
 from strands.experimental.context_manager import ContextManager, Offload
 
 summarizer_model = BedrockModel(model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0")
 
 agent = Agent(
-    tools=[...],
     context_manager=ContextManager(
         strategies=[
             Offload.truncate("tool_results").when(threshold=2500),
@@ -174,13 +182,13 @@ agent = Agent(
 | --- | --- |
 | `context_manager="auto"` | Best default. Offloading + summarization + proactive compression |
 | `context_manager="agentic"` | Model self-manages context. Trades tokens for judgment |
-| `Offload.truncate(...)` | Simple, predictable. Loses old info entirely |
+| `Offload.truncate(...)` | Keeps a preview; originals remain recoverable when stash is enabled |
 | `Offload.summarize(...)` | Preserves more info. Lossy compression, costs an LLM call |
 | `Offload.drop(...)` | Most aggressive. Content goes to stash only |
 | Context injection | Ephemeral per-call data. Never persisted to history |
 
 ## Resources
 
-- 📖 [Context Management docs](https://strandsagents.com/docs/user-guide/concepts/context-management/)
-- 📖 [Context Injector docs](https://strandsagents.com/docs/user-guide/concepts/plugins/context-injector/)
-- 📖 [Context Offloader docs](https://strandsagents.com/docs/user-guide/concepts/plugins/context-offloader/)
+- 📖 [Context Management docs](https://strandsagents.com/docs/user-guide/sdk/context-management/)
+- 📖 [Context Injector docs](https://strandsagents.com/docs/user-guide/sdk/plugins/context-injector/)
+- 📖 [Context Offloader docs](https://strandsagents.com/docs/user-guide/sdk/plugins/context-offloader/)

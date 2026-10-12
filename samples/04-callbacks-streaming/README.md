@@ -1,5 +1,12 @@
 # Callbacks and Streaming
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
+> [!WARNING]
+> **Changed since recording:** The calculator is now a small custom `@tool` defined in the sample, replacing the older `strands_tools.calculator` import. The callback and streaming APIs shown in the video still apply.
+
 By default, Strands streams model output token-by-token to the console. Callback handlers let you customize this behavior - suppress tool output, format text differently, or route events to a logging system. For programmatic consumption, async iterators give you structured access to every event the agent produces. For serving agents over HTTP, you can stream responses using Server-Sent Events.
 
 ## Files
@@ -36,6 +43,6 @@ curl -X POST http://localhost:8000/stream \
 
 ## Further Reading
 
-- [Strands Agents: Streaming](https://strandsagents.com/docs/user-guide/concepts/streaming/)
-- [Strands Agents: Async Iterators](https://strandsagents.com/docs/user-guide/concepts/streaming/async-iterators/)
+- [Strands Agents: Streaming](https://strandsagents.com/docs/user-guide/sdk/streaming/)
+- [Strands Agents: Async Iterators](https://strandsagents.com/docs/user-guide/sdk/streaming/async-iterators/)
 - [Hands-on Workshop: Build Your First Agent](https://catalog.us-east-1.prod.workshops.aws/workshops/083b80d7-5a90-402b-9bb4-19fb53092808/en-US)

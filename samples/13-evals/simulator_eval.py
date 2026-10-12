@@ -48,7 +48,7 @@ def task_function(case: Case) -> dict:
 test_cases = [
     Case[str, str](
         name="refund-request",
-        input="Hi, I need to return a laptop I bought. My customer ID is C-1001.",
+        input="Hi, I need to return my wireless headphones, order ORD-5521. My customer ID is C-1001.",
         metadata={"task_description": "Customer gets refund processed for their order"},
     ),
     Case[str, str](
@@ -70,8 +70,7 @@ evaluators = [
 ]
 
 experiment = Experiment[str, str](cases=test_cases, evaluators=evaluators)
-reports = experiment.run_evaluations(task_function)
+report = experiment.run_evaluations(task_function)
 
 print("=== Multi-Turn Simulation Results ===")
-for report in reports:
-    report.run_display()
+report.run_display()

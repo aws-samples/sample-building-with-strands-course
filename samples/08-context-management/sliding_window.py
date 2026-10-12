@@ -1,11 +1,11 @@
 """
-Context Strategy: Truncate (Drop Oldest)
+Context Strategy: Truncate (Keep Previews)
 
 The simplest approach to context management: when the context window fills up,
-remove the oldest messages. Fast, predictable, and where most agents start.
+shorten older content to head/tail previews. Originals remain in the stash.
 
 This uses the new ContextManager with an Offload.truncate strategy that removes
-old messages when utilization hits the threshold, keeping the most recent ones.
+content when utilization hits the threshold, keeping recent messages untouched.
 """
 
 from strands import Agent, AgentSkills
@@ -35,7 +35,7 @@ agent = Agent(
         tone_handler,
     ],
     system_prompt=SYSTEM_PROMPT,
-    # Truncate strategy: when context hits 90% full, remove the oldest messages
+    # Truncate strategy: when context hits 90% full, shorten older content
     # while preserving the 10 most recent. Large tool results (>2500 tokens)
     # are truncated to a preview immediately.
     context_manager=ContextManager(

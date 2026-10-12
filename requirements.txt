@@ -1,0 +1,2 @@
+# Tested baseline for lessons 1-12. Optional lesson dependencies are listed below.
+strands-agents[web-fetch]==1.59.0

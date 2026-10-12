@@ -3,15 +3,11 @@ Creates the customer service agent with tools, skills, and steering.
 Shared between the interactive script and evaluation suites.
 """
 
-import sys
 import os
-
-# Add the steering folder to path so we can import the tools and handlers
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "07-steering"))
 
 from strands import Agent, AgentSkills
 from customer_service_tools import lookup_customer, get_order_history, process_refund
-from steering_handlers import RefundWorkflowHandler, tone_handler
+from steering_handlers import RefundWorkflowHandler, ToneGuardrailHandler
 
 SYSTEM_PROMPT = """You are a customer service agent for an online electronics store.
 Be helpful, professional, and concise. Use the available tools to look up customer
@@ -25,7 +21,7 @@ Important guidelines:
 - Never show internal IDs, system formats, or example data to the customer.
 - Be warm but efficient. Customers want their problem solved, not a long conversation."""
 
-SKILLS_DIR = os.path.join(os.path.dirname(__file__), "..", "07-steering", "skills")
+SKILLS_DIR = os.path.join(os.path.dirname(__file__), "skills")
 
 
 def create_customer_service_agent(**kwargs):
@@ -37,7 +33,7 @@ def create_customer_service_agent(**kwargs):
         plugins=[
             skills_plugin,
             RefundWorkflowHandler(),
-            tone_handler,
+            ToneGuardrailHandler(),
         ],
         system_prompt=SYSTEM_PROMPT,
         context_manager="auto",

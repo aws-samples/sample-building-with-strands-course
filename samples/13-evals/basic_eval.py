@@ -56,8 +56,8 @@ evaluator = OutputEvaluator(
 
 # Create and run experiment
 experiment = Experiment[str, str](cases=test_cases, evaluators=[evaluator])
-reports = experiment.run_evaluations(get_response)
+report = experiment.run_evaluations(get_response)
 
 # Display results
 print("=== Basic Output Evaluation Results ===")
-reports[0].run_display()
+report.run_display()

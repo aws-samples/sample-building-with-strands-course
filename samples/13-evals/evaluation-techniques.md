@@ -1,5 +1,9 @@
 # Evaluation Techniques
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
 Traditional testing breaks down with nondeterministic agents. You need: LLM-as-a-judge scoring, multi-turn simulations, trajectory validation, and deterministic assertions combined into eval suites that detect regressions.
 
 ## Installation
@@ -11,6 +15,8 @@ pip install strands-agents-evals
 
 ## Basic Evaluation Structure
 
+Run from `samples/13-evals` so the factory can find the sample tools and skills.
+
 ```python
 from strands import Agent, AgentSkills
 from strands_evals import Case, Experiment
@@ -18,23 +24,20 @@ from strands_evals.evaluators import OutputEvaluator, TrajectoryEvaluator
 from strands_evals.extractors import tools_use_extractor
 from strands_evals.types import TaskOutput
 
+from create_agent import create_customer_service_agent
+
 def create_agent():
-    return Agent(
-        tools=[lookup_customer, get_order_history, process_refund],
-        plugins=[AgentSkills(skills=["./skills"]), RefundWorkflowHandler()],
-        system_prompt=SYSTEM_PROMPT,
-        callback_handler=None,
-    )
+    return create_customer_service_agent(callback_handler=None)
 
 # Trajectory evaluator — validates tool call ordering
 trajectory_evaluator = TrajectoryEvaluator(
-    rubric="Score 1.0 if workflow sequence matches expected trajectory...",
+    rubric="Match the expected tool order; ignore supplementary skills tool calls.",
     include_inputs=True,
 )
 
 # Output evaluator — scores response quality
 output_evaluator = OutputEvaluator(
-    rubric="Score 1.0 if professional, empathetic, addresses the concern...",
+    rubric="Score accuracy, professionalism, and whether the response addresses the request.",
 )
 
 def get_response(case: Case) -> TaskOutput:
@@ -46,7 +49,7 @@ def get_response(case: Case) -> TaskOutput:
 cases = [
     Case(
         name="refund-full-workflow",
-        input="I'm customer C-1001. Refund my headphones order ORD-5521 please.",
+        input="I'm C-1001. Refund order ORD-5521. Yes, I confirm the refund.",
         expected_output="Refund processed with 3-5 day timeline.",
         expected_trajectory=["lookup_customer", "get_order_history", "process_refund"],
     ),
@@ -54,7 +57,7 @@ cases = [
         name="missing-customer-id",
         input="I want a refund.",
         expected_output="Ask for customer ID before proceeding.",
-        expected_trajectory=["lookup_customer"],
+        expected_trajectory=[],
     ),
 ]
 
@@ -64,6 +67,7 @@ experiment = Experiment(
 )
 
 report = experiment.run_evaluations(task=get_response)
+report.run_display()
 
 ```
 
@@ -83,74 +87,76 @@ report = experiment.run_evaluations(task=get_response)
 
 ## Chaos Testing
 
-Use chaos testing to verify your agent handles tool failures gracefully. The ChaosPlugin intercepts tool calls and injects configurable failures. The following example evaluates a pokemon game agent. This is a snippet showing just the chaos testing piece, and you can find the full source code for the agent on GitHub:
+Use chaos testing to verify your agent handles tool failures gracefully. The ChaosPlugin intercepts tool calls and injects configurable failures. This example uses the course's mock order tool and a fresh agent for each case:
 
 ```python
 from strands import Agent
+from strands_evals import Case
 from strands_evals.chaos import ChaosCase, ChaosExperiment, ChaosPlugin
 from strands_evals.chaos.effects import Timeout, NetworkError, TruncateFields
-from strands_evals.evaluators.deterministic import Contains
+from strands_evals.evaluators import OutputEvaluator
+from customer_service_tools import get_order_history
 
-chaos = ChaosPlugin()
-agent = Agent(
-    tools=[get_pokemon, get_move],
-    context_manager="auto",
-    plugins=[chaos],
-)
-
-# Define failure scenarios
 effect_maps = {
-    "api_timeout": {"tool_effects": {"get_move": [Timeout()]}},
-    "api_down": {"tool_effects": {"get_pokemon": [NetworkError()]}},
-    "partial_response": {"tool_effects": {"get_pokemon": [TruncateFields(max_length=200)]}},
+    "api_timeout": {"tool_effects": {"get_order_history": [Timeout()]}},
+    "api_down": {"tool_effects": {"get_order_history": [NetworkError()]}},
+    "partial_response": {
+        "tool_effects": {"get_order_history": [TruncateFields(max_length=200)]}
+    },
 }
-
-# Expand cases across all failure modes (+ a no-failure baseline)
 chaos_cases = ChaosCase.expand(
-    [Case(name="earthquake_ice_beam", input="Which Pokemon learns both Earthquake and Ice Beam with the highest Attack?")],
+    [Case(name="order_status", input="Check the orders for customer C-1001.")],
     effect_maps,
     include_no_effect_baseline=True,
 )
 
+def run_case(case):
+    agent = Agent(
+        tools=[get_order_history], plugins=[ChaosPlugin()], callback_handler=None,
+        system_prompt="Use order data. If it is unavailable, explain the failure.",
+    )
+    return {"output": str(agent(case.input))}
+
 experiment = ChaosExperiment(
     cases=chaos_cases,
-    evaluators=[Contains(value="rampardos", case_sensitive=False, name="correct_answer")],
+    evaluators=[OutputEvaluator(
+        rubric="Use returned order data or acknowledge a tool failure. Do not invent orders."
+    )],
 )
-
-report = experiment.run_evaluations(task=lambda case: {"output": str(agent(case.input))})
-
+report = experiment.run_evaluations(task=run_case)
+report.run_display()
 ```
 
-Does the agent recover when `get_move` times out? When `get_pokemon` returns a network error? Chaos testing gives you the means to test and refine resilience while you build.
+Does the agent recover when `get_order_history` times out? When `get_order_history` returns a network error? Chaos testing gives you the means to test and refine resilience while you build.
 
-📂 [pokemon_team_advisor](https://github.com/strands-agents/samples/tree/main/python/05-technical-use-cases/pokemon-team-advisor) — Find the full code on GitHub
 
 ## Red Teaming
 
 Test whether your agent resists adversarial pressure like jailbreaks, data exfiltration attempts, excessive agency:
 
 ```python
+from create_agent import create_customer_service_agent
 from strands_evals.experimental.redteam import RedTeamExperiment
 from strands_evals.experimental.redteam.generators.adversarial import AdversarialCaseGenerator
 from strands_evals.experimental.redteam.strategies import CrescendoStrategy
 
 cases = AdversarialCaseGenerator().generate_cases(
-    agent=agent,
+    agent=create_customer_service_agent(),
     risk_categories=["data_exfiltration", "excessive_agency"],
     num_cases=3,
 )
 
 experiment = RedTeamExperiment(
     cases=cases,
-    agent=agent,
-    strategies=[CrescendoStrategy()],
+    agent_factory=create_customer_service_agent,  # fresh state for each attack
+    attack_strategies=[CrescendoStrategy()],
 )
 
-report = experiment.run()
-
+report = experiment.run_evaluations()
 ```
 
-Red teaming validates that your guardrails hold under adversarial conditions, not just happy-path inputs.
+Red teaming probes the tested guardrails under adversarial conditions. Passing these
+cases does not prove resistance to every attack.
 
 📖 [Strands Evals: Chaos Testing & Red Teaming blog post](https://strandsagents.com/blog/reduced-cost-better-isolation-more-resilience/)
 

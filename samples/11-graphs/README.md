@@ -1,6 +1,21 @@
 # Graphs and Workflows
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
+> [!WARNING]
+> **Changed since recording:** The graph API in this lesson still works. The researcher now uses the SDK web-fetch tool, which needs `pip install "strands-agents[web-fetch]"`. Follow the current import below when running the graph example.
+
 Graphs and workflows give you deterministic control over multi-agent execution. Unlike agents-as-tools (where the orchestrator decides flow dynamically), these patterns let you define the exact execution order, dependencies, and parallel paths upfront.
+
+## Setup
+
+These examples use web fetching. Install its optional dependencies:
+
+```bash
+pip install "strands-agents[web-fetch]==1.59.0"
+```
 
 ## Files
 
@@ -36,6 +51,6 @@ python workflow.py
 
 ## Further Reading
 
-- [Strands Agents: Graph Pattern](https://strandsagents.com/docs/user-guide/concepts/multi-agent/graph/)
-- [Strands Agents: Workflows](https://strandsagents.com/docs/user-guide/concepts/multi-agent/workflow/)
+- [Strands Agents: Graph Pattern](https://strandsagents.com/docs/user-guide/sdk/multi-agent/graph/)
+- [Strands Agents: Workflows](https://strandsagents.com/docs/user-guide/sdk/multi-agent/workflow/)
 - [Hands-on Workshop: Build Your First Agent](https://catalog.us-east-1.prod.workshops.aws/workshops/083b80d7-5a90-402b-9bb4-19fb53092808/en-US)

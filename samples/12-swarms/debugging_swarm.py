@@ -124,9 +124,10 @@ debugging_swarm = Swarm(
     repetitive_handoff_min_unique_agents=2,
 )
 
-result = debugging_swarm(
-    "The payment service is returning 500 errors for about 25% of requests. Started around 30 minutes ago."
-)
+if __name__ == "__main__":
+    result = debugging_swarm(
+        "The payment service is returning 500 errors for about 25% of requests. Started around 30 minutes ago."
+    )
 
-print(f"\nStatus: {result.status}")
-print(f"Path: {' → '.join(n.node_id for n in result.node_history)}")
+    print(f"\nStatus: {result.status}")
+    print(f"Path: {' → '.join(n.node_id for n in result.node_history)}")

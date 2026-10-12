@@ -1,5 +1,12 @@
 # Tools and Callbacks
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
+> [!WARNING]
+> **Changed since recording:** The calculator is now a small custom `@tool` defined in the sample, replacing the older `strands_tools.calculator` import. The callback and streaming APIs shown in the video still apply.
+
 Agents need tools from multiple sources. Strands supports three categories: custom tools (@tool decorator), vended tools (built into the SDK), and MCP servers for connecting to external systems. All coexist in the same agent's tool list.
 
 ## MCP (Model Context Protocol)
@@ -177,6 +184,6 @@ async def stream_response(request: PromptRequest):
 
 ## Resources
 
-- 📖 [MCP Tools Docs](https://strandsagents.com/docs/user-guide/concepts/tools/mcp-tools/)
-- 📖 [Tools Overview](https://strandsagents.com/docs/user-guide/concepts/tools/)
-- 📖 [Callbacks](https://strandsagents.com/docs/user-guide/concepts/streaming/callback-handlers/)
+- 📖 [MCP Tools Docs](https://strandsagents.com/docs/user-guide/sdk/tools/mcp-tools/)
+- 📖 [Tools Overview](https://strandsagents.com/docs/user-guide/sdk/tools/)
+- 📖 [Callbacks](https://strandsagents.com/docs/user-guide/sdk/streaming/callback-handlers/)

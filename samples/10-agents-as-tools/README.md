@@ -1,8 +1,23 @@
 # Agents as Tools
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
+> [!WARNING]
+> **Changed since recording:** The research tool now comes from `strands.vended_tools.web_fetch`. Install `strands-agents[web-fetch]` before running the sample. The direct-agent and `@tool` composition patterns still work.
+
 The simplest multi-agent pattern: one orchestrator agent calls specialist agents as tools. The orchestrator stays in control, decides when to delegate, and synthesizes the results. This is the hub-and-spoke model.
 
 There are two approaches - pass an agent directly in the tools list (simplest), or wrap it in a `@tool` function for full control over invocation.
+
+## Setup
+
+These examples use web fetching. Install its optional dependencies:
+
+```bash
+pip install "strands-agents[web-fetch]==1.59.0"
+```
 
 ## Files
 
@@ -27,6 +42,6 @@ python agent_as_tool.py
 
 ## Further Reading
 
-- [Strands Agents: Agents as Tools](https://strandsagents.com/docs/user-guide/concepts/multi-agent/agents-as-tools/)
-- [Strands Agents: Multi-Agent Patterns](https://strandsagents.com/docs/user-guide/concepts/multi-agent/multi-agent-patterns/)
+- [Strands Agents: Agents as Tools](https://strandsagents.com/docs/user-guide/sdk/multi-agent/agents-as-tools/)
+- [Strands Agents: Multi-Agent Patterns](https://strandsagents.com/docs/user-guide/sdk/multi-agent/multi-agent-patterns/)
 - [Hands-on Workshop: Module 5 (Multi-Agent)](https://catalog.us-east-1.prod.workshops.aws/workshops/083b80d7-5a90-402b-9bb4-19fb53092808/en-US/05-multi-agent)

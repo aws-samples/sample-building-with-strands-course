@@ -6,7 +6,6 @@ The agent code is identical to what runs locally or on AgentCore.
 """
 
 import os
-import sys
 
 from mangum import Mangum
 from fastapi import FastAPI
@@ -15,7 +14,7 @@ from pydantic import BaseModel
 from strands import Agent
 from strands.vended_plugins.skills.agent_skills import AgentSkills
 from customer_service_tools import lookup_customer, get_order_history, process_refund
-from steering_handlers import RefundWorkflowHandler, tone_handler
+from steering_handlers import RefundWorkflowHandler, ToneGuardrailHandler
 
 app = FastAPI()
 
@@ -33,15 +32,19 @@ Important guidelines:
 
 SKILLS_DIR = os.path.join(os.path.dirname(__file__), "skills")
 
-skills_plugin = AgentSkills(skills=[SKILLS_DIR])
-
-agent = Agent(
-    tools=[lookup_customer, get_order_history, process_refund],
-    plugins=[skills_plugin, RefundWorkflowHandler(), tone_handler],
-    system_prompt=SYSTEM_PROMPT,
-    context_manager="auto",
-    callback_handler=None,
-)
+def create_agent():
+    """Create request-local conversation and plugin state."""
+    return Agent(
+        tools=[lookup_customer, get_order_history, process_refund],
+        plugins=[
+            AgentSkills(skills=[SKILLS_DIR]),
+            RefundWorkflowHandler(),
+            ToneGuardrailHandler(),
+        ],
+        system_prompt=SYSTEM_PROMPT,
+        context_manager="auto",
+        callback_handler=None,
+    )
 
 
 class InvokeRequest(BaseModel):
@@ -54,6 +57,7 @@ class InvokeResponse(BaseModel):
 
 @app.post("/invoke", response_model=InvokeResponse)
 def invoke(request: InvokeRequest):
+    agent = create_agent()
     result = agent(request.prompt)
     return InvokeResponse(response=str(result))
 

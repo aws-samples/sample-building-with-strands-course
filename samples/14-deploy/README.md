@@ -1,11 +1,15 @@
 # Deploying to Production
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
 This section covers two deployment options:
 
 - **Option A: Amazon Bedrock AgentCore** - The managed option. Handles compute isolation, authentication, memory, and observability automatically. Requires an AWS account with AgentCore access (paid tier).
 - **Option B: AWS Lambda** - The free-tier friendly option. Simpler to set up but you manage session isolation, authentication, and memory yourself.
 
-Both deploy the same agent code. The harness you built with Strands (tools, hooks, skills, steering, context management) works identically in either environment.
+Both use the same tools, skills, and steering. Their request and session lifecycles differ, as described below.
 
 ---
 
@@ -24,7 +28,7 @@ The deployed agent itself is only part of the production architecture. Runtime h
 - **customer_service_tools.py** - Mock tools (lookup_customer, get_order_history, process_refund).
 - **steering_handlers.py** - Refund workflow enforcement and tone guardrails.
 - **skills/** - Skill definitions loaded on demand by the agent.
-- **customerserviceagent/** - The AgentCore CLI project with CDK infrastructure, configuration, and app code for deployment.
+- **CourseDemo/** - Created by the commands below; it is not included in the repository.
 
 ## Setup
 
@@ -35,45 +39,41 @@ The deployed agent itself is only part of the production architecture. Runtime h
 - Python 3.10+ with `uv`
 - AgentCore CLI installed
 
-### Local Development
+### Create and Deploy the Project
+
+Run from `samples/14-deploy`:
 
 ```bash
-cd customerserviceagent
-agentcore dev
-```
+# From samples/14-deploy, install the CLI and create a Python Strands project.
+npm install -g @aws/agentcore
+agentcore create --name CourseAgent --project-name CourseDemo \
+  --framework Strands --model-provider Bedrock --language Python --memory none
 
-## Deploying
+# Replace the generated starter with this lesson's agent and dependencies.
+cp main.py customer_service_tools.py steering_handlers.py pyproject.toml \
+  CourseDemo/app/CourseAgent/
+cp -R skills/. CourseDemo/app/CourseAgent/skills/
+cd CourseDemo
 
-```bash
-# Create the AgentCore project
-agentcore create
-
-# Add memory with semantic and preference strategies
 agentcore add memory --name CustomerServiceMemory --strategies SEMANTIC,USER_PREFERENCE
-
-# Deploy to AWS
 agentcore deploy
+
+# Reuse this ID for this actor's conversation; generate a new ID for another user.
+SESSION_ID="$(python3 -c 'import uuid; print(uuid.uuid4())')"
+agentcore invoke --session-id "$SESSION_ID" \
+  '{"prompt": "I need help returning my order", "actor_id": "customer-demo"}'
 ```
 
-## Invoking the Deployed Agent
+For local testing after scaffolding, use `agentcore dev` from `CourseDemo`.
+The complete `main.py` accepts both a direct JSON payload and the JSON string carried
+inside the CLI's prompt field. Keep one actor per runtime session. Its cached agent
+rejects a different actor/session pair, while the Lambda example starts fresh on
+every request. This demo's `actor_id` is caller-supplied; bind it to authenticated
+identity in an application.
 
-Once deployed, invoke with a session ID to maintain conversation state across requests:
-
-```bash
-SESSION_ID="your-session-id-here"
-
-agentcore invoke --session-id "$SESSION_ID" \
-  '{"prompt": "I need help returning my order", "actor_id": "morgan"}'
-
-agentcore invoke --session-id "$SESSION_ID" \
-  '{"prompt": "C-1001", "actor_id": "morgan"}'
-
-agentcore invoke --session-id "$SESSION_ID" \
-  '{"prompt": "wireless headphones", "actor_id": "morgan"}'
-
-agentcore invoke --session-id "$SESSION_ID" \
-  '{"prompt": "yes", "actor_id": "morgan"}'
-```
+The CLI memory command creates local configuration before deployment. Verify the
+runtime has `BEDROCK_AGENTCORE_MEMORY_ID` after deployment; without it the sample
+keeps process-local conversation history only.
 
 ## Key Concepts
 
@@ -98,61 +98,18 @@ If you don't have AgentCore access, you can deploy the same agent to AWS Lambda.
 
 ### Lambda Deployment
 
-1. Install the Lambda adapter:
+Use the complete FastAPI/Mangum sample and SAM template in `lambda-deployment/`:
 
 ```bash
-pip install strands-agents mangum
+cd lambda-deployment
+pip install -r requirements.txt
+sam build
+sam deploy --guided
 ```
 
-2. Create a `lambda_handler.py`:
-
-```python
-from mangum import Mangum
-from fastapi import FastAPI
-from pydantic import BaseModel
-from strands import Agent
-from strands.vended_plugins.skills.agent_skills import AgentSkills
-from customer_service_tools import lookup_customer, get_order_history, process_refund
-from steering_handlers import RefundWorkflowHandler, tone_handler
-
-app = FastAPI()
-
-SYSTEM_PROMPT = """You are a customer service agent for an online electronics store.
-Be helpful, professional, and concise."""
-
-skills_plugin = AgentSkills(skills=["./skills"])
-
-agent = Agent(
-    tools=[lookup_customer, get_order_history, process_refund],
-    plugins=[skills_plugin, RefundWorkflowHandler(), tone_handler],
-    system_prompt=SYSTEM_PROMPT,
-    context_manager="auto",
-    callback_handler=None,
-)
-
-
-class Request(BaseModel):
-    prompt: str
-
-
-@app.post("/invoke")
-def invoke(request: Request):
-    result = agent(request.prompt)
-    return {"response": str(result)}
-
-
-# Lambda entry point
-handler = Mangum(app)
-```
-
-3. Package and deploy with SAM or the AWS CLI:
-
-```bash
-# Using SAM (simplest)
-sam init --runtime python3.12 --app-template hello-world
-# Replace the handler with your agent code
-sam build && sam deploy --guided
-```
+Each HTTP request creates a new agent and new plugins. Requests do not share
+conversation history. For persistence, use a session-specific `SnapshotSessionManager`
+with durable storage and bind session IDs to authenticated users.
 
 ### Lambda vs AgentCore
 
@@ -163,5 +120,5 @@ If you're on the free tier or just want to get something deployed quickly, Lambd
 ## Further Reading
 
 - [Amazon Bedrock AgentCore Documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html)
-- [Strands Agents: Deploy to Lambda](https://strandsagents.com/docs/user-guide/deploy/deploy_to_aws_lambda/)
+- [Strands Agents: Deploy to Lambda](https://strandsagents.com/docs/user-guide/sdk/deploy/deploy_to_aws_lambda/)
 - [Hands-on Workshop: Module 7 (Deploy)](https://catalog.us-east-1.prod.workshops.aws/workshops/083b80d7-5a90-402b-9bb4-19fb53092808/en-US/07-deploy)

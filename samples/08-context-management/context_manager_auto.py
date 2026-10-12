@@ -7,8 +7,7 @@ One line gives you:
   - Old messages compressed into structured summaries (not dropped)
   - Proactive compression at 85% context usage to stay ahead of overflow
 
-In benchmarks on real code investigation tasks, this cut costs by 55%
-while accuracy went from 68% to 98%. Half the tokens, better results.
+Measure cost and answer quality with evaluation cases for your own workload.
 """
 
 from strands import Agent

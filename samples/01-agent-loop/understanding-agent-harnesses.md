@@ -1,5 +1,12 @@
 # Understanding Agent Harnesses
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
+> [!WARNING]
+> **Changed since recording:** The samples use SDK-vended `file_editor`, `shell`, and `web_fetch` instead of the older community-tool imports. Web fetching needs the optional dependencies: `pip install "strands-agents[web-fetch]"`. Use the imports shown below.
+
 ## Why Agents?
 
 Models are stateless. They process one request, produce a completion, and forget. They can't take action, access live data, or coordinate multi-step workflows alone. Agents solve this by wrapping a model in a runtime system that gives it tools, memory, and a reasoning loop.
@@ -61,7 +68,8 @@ print(response)
 
 ```python
 from strands import Agent, tool
-from strands.vended_tools import file_editor, web_fetch
+from strands.vended_tools import file_editor
+from strands.vended_tools.web_fetch import web_fetch
 
 @tool
 def query_product_database(query: str) -> str:
@@ -145,7 +153,7 @@ agent("Research the current state of AI agent deployment patterns in production,
 
 ## Resources
 
-- 📖 [Getting Started](https://strandsagents.com/docs/user-guide/quickstart/python/)
-- 📖 [Strands Agents MCP Server](https://strandsagents.com/docs/user-guide/build-with-ai/)
-- 📖 [Tools](https://strandsagents.com/docs/user-guide/concepts/tools/)
-- 📖 [Custom Tools](https://strandsagents.com/docs/user-guide/concepts/tools/custom-tools/)
+- 📖 [Getting Started](https://strandsagents.com/docs/user-guide/sdk/quickstart/python/)
+- 📖 [Strands Agents MCP Server](https://strandsagents.com/docs/user-guide/sdk/quickstart/python/#strands-mcp-server-optional)
+- 📖 [Tools](https://strandsagents.com/docs/user-guide/sdk/tools/)
+- 📖 [Custom Tools](https://strandsagents.com/docs/user-guide/sdk/tools/custom-tools/)

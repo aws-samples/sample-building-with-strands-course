@@ -1,11 +1,15 @@
 # Multi-Agent Architectures
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
 Strands provides three composable multi-agent patterns. Each solves a different coordination problem, and they can nest inside each other.
 
 | Pattern | Structure | Use When |
 | --- | --- | --- |
 | **Agents as Tools** | Hub-and-spoke. Orchestrator calls specialists | Clear manager-specialist relationship, isolated context |
-| **Graph** | DAG with explicit edges | You can draw the workflow on a whiteboard |
+| **Graph** | Directed graph with explicit edges | You can draw the workflow on a whiteboard |
 | **Swarm** | Autonomous handoffs, no predefined structure | The team needs to figure it out together |
 
 ## Agents as Tools
@@ -134,6 +138,10 @@ In a swarm, agents hand off to each other autonomously with no predefined struct
 ```python
 from strands import Agent
 from strands.multiagent import Swarm
+from debugging_swarm import (
+    check_application_logs, check_metrics_dashboard,
+    check_recent_deployments, check_infrastructure_status,
+)
 
 triage = Agent(
     name="triage",
@@ -195,8 +203,8 @@ These patterns nest: a swarm can be a node in a graph, a graph can contain agent
 
 ## Resources
 
-- 📖 [Multi-Agent Patterns Overview](https://strandsagents.com/docs/user-guide/concepts/multi-agent/multi-agent-patterns/)
-- 📖 [Agents as Tools](https://strandsagents.com/docs/user-guide/concepts/multi-agent/agents-as-tools/)
-- 📖 [Graph Workflows](https://strandsagents.com/docs/user-guide/concepts/multi-agent/graph/)
-- 📖 [Swarms](https://strandsagents.com/docs/user-guide/concepts/multi-agent/swarm/)
-- 📖 [Workflow (Deterministic Pipelines)](https://strandsagents.com/docs/user-guide/concepts/multi-agent/workflow/)
+- 📖 [Multi-Agent Patterns Overview](https://strandsagents.com/docs/user-guide/sdk/multi-agent/multi-agent-patterns/)
+- 📖 [Agents as Tools](https://strandsagents.com/docs/user-guide/sdk/multi-agent/agents-as-tools/)
+- 📖 [Graph Workflows](https://strandsagents.com/docs/user-guide/sdk/multi-agent/graph/)
+- 📖 [Swarms](https://strandsagents.com/docs/user-guide/sdk/multi-agent/swarm/)
+- 📖 [Workflow (Deterministic Pipelines)](https://strandsagents.com/docs/user-guide/sdk/multi-agent/workflow/)

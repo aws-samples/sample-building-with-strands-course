@@ -13,34 +13,35 @@ class ResponseLengthEvaluator(Evaluator[str, str]):
     """Evaluates that responses fall within an acceptable length range."""
 
     def __init__(self, min_words: int = 10, max_words: int = 200):
+        super().__init__()
         self.min_words = min_words
         self.max_words = max_words
 
-    def evaluate(self, evaluation_case: EvaluationData[str, str]) -> EvaluationOutput:
+    def evaluate(self, evaluation_case: EvaluationData[str, str]) -> list[EvaluationOutput]:
         response = evaluation_case.actual_output
         word_count = len(response.split())
 
         if self.min_words <= word_count <= self.max_words:
-            return EvaluationOutput(
+            return [EvaluationOutput(
                 score=1.0,
                 test_pass=True,
                 reason=f"Response length ({word_count} words) is within acceptable range [{self.min_words}-{self.max_words}]",
                 label="appropriate_length",
-            )
+            )]
         elif word_count < self.min_words:
-            return EvaluationOutput(
+            return [EvaluationOutput(
                 score=0.0,
                 test_pass=False,
                 reason=f"Response too short ({word_count} words, minimum is {self.min_words})",
                 label="too_short",
-            )
+            )]
         else:
-            return EvaluationOutput(
+            return [EvaluationOutput(
                 score=0.5,
                 test_pass=False,
                 reason=f"Response too long ({word_count} words, maximum is {self.max_words})",
                 label="too_long",
-            )
+            )]
 
 
 @eval_task()
@@ -64,11 +65,12 @@ test_cases = [
     ),
 ]
 
-# Deterministic evaluator — fast, free, no LLM calls
-evaluator = ResponseLengthEvaluator(min_words=10, max_words=100)
+if __name__ == "__main__":
+    # Deterministic evaluator — fast, free, no LLM calls
+    evaluator = ResponseLengthEvaluator(min_words=10, max_words=100)
 
-experiment = Experiment[str, str](cases=test_cases, evaluators=[evaluator])
-reports = experiment.run_evaluations(get_response)
+    experiment = Experiment[str, str](cases=test_cases, evaluators=[evaluator])
+    report = experiment.run_evaluations(get_response)
 
-print("=== Custom Deterministic Evaluator Results ===")
-reports[0].run_display()
+    print("=== Custom Deterministic Evaluator Results ===")
+    report.run_display()

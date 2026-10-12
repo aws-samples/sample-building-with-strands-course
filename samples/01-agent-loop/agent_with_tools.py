@@ -1,5 +1,6 @@
 from strands import Agent, tool
-from strands.vended_tools import file_editor, web_fetch
+from strands.vended_tools import file_editor
+from strands.vended_tools.web_fetch import web_fetch
 
 
 @tool

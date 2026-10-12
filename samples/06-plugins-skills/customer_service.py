@@ -131,15 +131,16 @@ agent = Agent(
     system_prompt=SYSTEM_PROMPT,
 )
 
-print("Customer Service Agent (type 'quit' to exit)")
-print("-" * 50)
+if __name__ == "__main__":
+    print("Customer Service Agent (type 'quit' to exit)")
+    print("-" * 50)
 
-while True:
-    user_input = input("\nCustomer: ").strip()
-    if user_input.lower() in ("quit", "exit", "q"):
-        print("Goodbye!")
-        break
-    if not user_input:
-        continue
-    print()
-    agent(user_input)
+    while True:
+        user_input = input("\nCustomer: ").strip()
+        if user_input.lower() in ("quit", "exit", "q"):
+            print("Goodbye!")
+            break
+        if not user_input:
+            continue
+        print()
+        agent(user_input)

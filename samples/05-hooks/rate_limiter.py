@@ -50,20 +50,21 @@ class LimitToolCounts(HookProvider):
             )
 
 
-agent = Agent(
-    tools=[get_weather],
-    hooks=[LimitToolCounts(max_calls=3)],
-)
+if __name__ == "__main__":
+    agent = Agent(
+        tools=[get_weather],
+        hooks=[LimitToolCounts(max_calls=3)],
+    )
 
-print("Weather Agent with rate limiter (type 'quit' to exit)")
-print("-" * 50)
+    print("Weather Agent with rate limiter (type 'quit' to exit)")
+    print("-" * 50)
 
-while True:
-    user_input = input("\nYou: ").strip()
-    if user_input.lower() in ("quit", "exit", "q"):
-        print("Goodbye!")
-        break
-    if not user_input:
-        continue
-    print()
-    agent(user_input)
+    while True:
+        user_input = input("\nYou: ").strip()
+        if user_input.lower() in ("quit", "exit", "q"):
+            print("Goodbye!")
+            break
+        if not user_input:
+            continue
+        print()
+        agent(user_input)

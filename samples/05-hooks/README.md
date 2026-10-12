@@ -1,5 +1,9 @@
 # Hooks
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
 Hooks add deterministic control to a probabilistic loop. They inject code at lifecycle events - before/after tool calls and before/after the agent loop - without changing the agent's logic. Unlike tools (which the model decides to use), hooks fire automatically every time, regardless of what the model reasons.
 
 A runaway loop could call the same tool dozens of times. A model might attempt a destructive operation without asking. Hooks solve this by enforcing rules that don't depend on the model "deciding" to behave.
@@ -36,5 +40,5 @@ python rate_limiter.py
 
 ## Further Reading
 
-- [Strands Agents: Hooks](https://strandsagents.com/docs/user-guide/concepts/agents/hooks/)
+- [Strands Agents: Hooks](https://strandsagents.com/docs/user-guide/sdk/agents/hooks/)
 - [Hands-on Workshop: Module 2 (Hooks)](https://catalog.us-east-1.prod.workshops.aws/workshops/083b80d7-5a90-402b-9bb4-19fb53092808/en-US/02-hooks)

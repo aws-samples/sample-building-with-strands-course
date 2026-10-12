@@ -1,5 +1,9 @@
 # Tools and MCP
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
 Tools give agents the ability to take actions and access information beyond what's in the model's training data. Strands supports three sources of tools: custom `@tool` functions you write, vended tools built into the SDK, and MCP (Model Context Protocol) servers that expose capabilities over a standard interface.
 
 MCP is particularly powerful because it lets you connect agents to externally managed tool servers - the agent discovers available tools dynamically at runtime rather than having them hardcoded.
@@ -35,6 +39,6 @@ python tool_executor.py
 
 ## Further Reading
 
-- [Strands Agents: Tools](https://strandsagents.com/docs/user-guide/concepts/tools/)
-- [Strands Agents: MCP Tools](https://strandsagents.com/docs/user-guide/concepts/tools/mcp-tools/)
+- [Strands Agents: Tools](https://strandsagents.com/docs/user-guide/sdk/tools/)
+- [Strands Agents: MCP Tools](https://strandsagents.com/docs/user-guide/sdk/tools/mcp-tools/)
 - [Hands-on Workshop: Build Your First Agent](https://catalog.us-east-1.prod.workshops.aws/workshops/083b80d7-5a90-402b-9bb4-19fb53092808/en-US)

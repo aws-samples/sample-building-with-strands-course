@@ -1,5 +1,9 @@
 # Model Providers
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
 Strands separates agent logic from model selection. You can swap the underlying model provider without changing your agent code - your tools, system prompt, and orchestration logic stay identical regardless of which provider you use.
 
 ## Files
@@ -29,6 +33,6 @@ python model_providers.py
 
 ## Further Reading
 
-- [Strands Agents: Model Providers](https://strandsagents.com/docs/user-guide/concepts/model-providers/)
-- [Amazon Bedrock Provider](https://strandsagents.com/docs/user-guide/concepts/model-providers/amazon-bedrock/)
-- [Ollama Provider](https://strandsagents.com/docs/user-guide/concepts/model-providers/ollama/)
+- [Strands Agents: Model Providers](https://strandsagents.com/docs/user-guide/sdk/model-providers/)
+- [Amazon Bedrock Provider](https://strandsagents.com/docs/user-guide/sdk/model-providers/amazon-bedrock/)
+- [Ollama Provider](https://strandsagents.com/docs/user-guide/sdk/model-providers/ollama/)

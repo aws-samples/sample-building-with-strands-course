@@ -1,5 +1,9 @@
 # Configuring Model Providers
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
 Model choice is an architecture decision. Different models have different strengths, costs, latency characteristics, and tool-use behavior. Strands abstracts providers behind a common interface so your agent code stays the same regardless of the underlying model.
 
 ## Configuring Providers
@@ -62,13 +66,13 @@ In sophisticated systems, different agents use different models:
 ```bash
 brew install ollama
 ollama serve
-ollama pull gemma3:latest
+ollama pull gemma4:latest
 
 ```
 
 ## Resources
 
-- 📖 [Model Providers Docs](https://strandsagents.com/docs/user-guide/concepts/model-providers/)
-- 🚀 [Getting Started Guide](https://strandsagents.com/docs/user-guide/quickstart/python/)
+- 📖 [Model Providers Docs](https://strandsagents.com/docs/user-guide/sdk/model-providers/)
+- 🚀 [Getting Started Guide](https://strandsagents.com/docs/user-guide/sdk/quickstart/python/)
 - 📂 [Course Code Repository](https://github.com/aws-samples/sample-building-with-strands-course)
 

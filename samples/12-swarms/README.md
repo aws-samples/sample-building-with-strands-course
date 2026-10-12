@@ -1,5 +1,9 @@
 # Swarms
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
 Swarms let agents hand off to each other autonomously - there's no predefined execution order. Each agent decides who to pass control to next based on what it discovers. When one agent hands off to another, it's a full transfer of control, not a function call that waits for a return.
 
 Swarms operate over a shared context, so each agent sees the accumulated work from previous agents - prior findings, handoff history, and state contributed during execution.
@@ -36,6 +40,6 @@ python mixed_patterns.py
 
 ## Further Reading
 
-- [Strands Agents: Multi-Agent Patterns](https://strandsagents.com/docs/user-guide/concepts/multi-agent/multi-agent-patterns/)
-- [Strands Agents: Swarm](https://strandsagents.com/docs/user-guide/concepts/multi-agent/swarm/)
+- [Strands Agents: Multi-Agent Patterns](https://strandsagents.com/docs/user-guide/sdk/multi-agent/multi-agent-patterns/)
+- [Strands Agents: Swarm](https://strandsagents.com/docs/user-guide/sdk/multi-agent/swarm/)
 - [Hands-on Workshop: Build Your First Agent](https://catalog.us-east-1.prod.workshops.aws/workshops/083b80d7-5a90-402b-9bb4-19fb53092808/en-US)

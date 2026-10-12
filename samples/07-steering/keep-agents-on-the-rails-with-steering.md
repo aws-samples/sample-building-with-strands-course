@@ -1,5 +1,9 @@
 # Keep Agents on the Rails with Steering
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
 Instructions in prompts aren't always reliably followed, especially as context grows. Steering lets you inspect and influence agent behavior at runtime, returning one of three outcomes: **Proceed**, **Guide**, or **Interrupt**.
 
 Strands Steering hooks achieved a [100% accuracy pass rate across 600 evaluation runs](https://strandsagents.com/blog/steering-accuracy-beats-prompts-workflows/), compared to 82.5% for simple prompt-based instructions and 80.8% for graph-based workflows.
@@ -90,5 +94,5 @@ agent = Agent(
 
 ## Resources
 
-- 📖 [Steering Hooks](https://strandsagents.com/docs/user-guide/concepts/plugins/steering/)
+- 📖 [Steering Hooks](https://strandsagents.com/docs/user-guide/sdk/agents/interventions/steering/)
 

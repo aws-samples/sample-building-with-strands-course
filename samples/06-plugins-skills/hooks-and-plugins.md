@@ -1,5 +1,9 @@
 # Hooks and Plugins
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
 Hooks inject deterministic logic into the agent lifecycle. They're middleware for agents like approval gates, rate limits, validation, and audit logging.
 
 ## Hook Architecture
@@ -46,7 +50,9 @@ agent = Agent(
 ## Example: Rate Limiting Tool Calls
 
 ```python
+from strands import Agent
 from strands.hooks import BeforeInvocationEvent, BeforeToolCallEvent, HookProvider, HookRegistry
+from rate_limiter import get_weather
 
 class LimitToolCounts(HookProvider):
     def __init__(self, max_calls: int = 3):
@@ -85,24 +91,12 @@ As agents grow, system prompts bloat with irrelevant instructions. Skills solve 
 
 Each skill is a markdown file in a subfolder containing guidance for a specific task. The agent loads skill instructions only when it needs them. This is one example of context engineering.
 
+Run the following from `samples/06-plugins-skills`:
+
 ```python
-from strands import Agent, AgentSkills, tool
+from strands import Agent, AgentSkills
 
-# Tools for customer service operations
-@tool
-def lookup_customer(customer_id: str) -> str:
-    """Look up a customer by their ID."""
-    # ... database/API call ...
-
-@tool
-def get_order_history(customer_id: str) -> str:
-    """Get order history for a customer."""
-    # ...
-
-@tool
-def process_refund(order_id: str, amount: float) -> str:
-    """Process a refund for an order."""
-    # ...
+from customer_service import lookup_customer, get_order_history, process_refund
 
 # Skills plugin discovers and registers all skills in the directory
 skills_plugin = AgentSkills(skills=["./skills"])
@@ -155,8 +149,8 @@ print(concise.last_result(agent))
 
 ## Resources
 
-- 📖 [Hooks Docs](https://strandsagents.com/docs/user-guide/concepts/agents/hooks/)
-- 📖 [Plugins Docs](https://strandsagents.com/docs/user-guide/concepts/plugins/)
-- 📖 [Skills Docs](https://strandsagents.com/docs/user-guide/concepts/plugins/skills/)
-- 📖 [Goal Loop Docs](https://strandsagents.com/docs/user-guide/concepts/plugins/goal-loop/)
+- 📖 [Hooks Docs](https://strandsagents.com/docs/user-guide/sdk/agents/hooks/)
+- 📖 [Plugins Docs](https://strandsagents.com/docs/user-guide/sdk/plugins/)
+- 📖 [Skills Docs](https://strandsagents.com/docs/user-guide/sdk/plugins/skills/)
+- 📖 [Goal Loop Docs](https://strandsagents.com/docs/user-guide/sdk/plugins/goal-loop/)
 

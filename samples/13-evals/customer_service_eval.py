@@ -162,5 +162,5 @@ if __name__ == "__main__":
         cases=cases,
         evaluators=[trajectory_evaluator, output_evaluator],
     )
-    reports = experiment.run_evaluations(get_response)
-    reports[0].run_display()
+    report = experiment.run_evaluations(get_response)
+    report.run_display()

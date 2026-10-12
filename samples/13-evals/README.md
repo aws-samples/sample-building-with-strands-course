@@ -1,5 +1,9 @@
 # Evaluations
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
 Traditional software testing breaks down with AI agents because of nondeterminism. The same input can produce different outputs across runs, and failures are often subtle - responses that are low quality, unsafe, incomplete, or off-policy rather than outright wrong. Evaluations give you systematic ways to measure agent quality and catch regressions.
 
 ## Files
@@ -15,10 +19,17 @@ Traditional software testing breaks down with AI agents because of nondeterminis
 - **steering_handlers.py** - Steering handlers shared with the customer service agent.
 - **skills/** - Skill definitions for the customer service agent.
 
+- **chaos_eval.py** - Inject failures into the mock order tool; fresh agent per case.
+- **red_team_eval.py** - Generate adversarial cases; fresh customer service agent per attack.
+
+`Experiment.run_evaluations()` returns one `EvaluationReport`. Call `report.run_display()`.
+Custom evaluators return `list[EvaluationOutput]` and initialize `Evaluator` with `super().__init__()`.
+Only the custom scoring rule is free of model calls; running its sample still invokes an agent.
+
 ## Running
 
 ```bash
-pip install strands-agents-evals
+pip install "strands-agents-evals==1.5.0"
 
 python basic_eval.py
 python trajectory_eval.py

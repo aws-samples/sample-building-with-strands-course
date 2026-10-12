@@ -1,5 +1,9 @@
 # Steering
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
 Steering intercepts the agent loop to inject guidance at decision points. Think of it as programmable guardrails - you define handlers that observe tool calls and agent responses, then either allow them, modify them, or block them entirely.
 
 There are two flavors: deterministic handlers that apply rules with code (fast, predictable), and LLM-based handlers that evaluate behavior using a separate model call (flexible, but adds latency).
@@ -30,6 +34,6 @@ Try requesting a refund and watch the steering enforce the correct tool order. T
 
 ## Further Reading
 
-- [Strands Agents: Hooks](https://strandsagents.com/docs/user-guide/concepts/agents/hooks/)
-- [Strands Agents: Interventions](https://strandsagents.com/docs/user-guide/concepts/agents/interventions/)
+- [Strands Agents: Hooks](https://strandsagents.com/docs/user-guide/sdk/agents/hooks/)
+- [Strands Agents: Interventions](https://strandsagents.com/docs/user-guide/sdk/agents/interventions/)
 - [Hands-on Workshop: Module 3 (Skills + Steering)](https://catalog.us-east-1.prod.workshops.aws/workshops/083b80d7-5a90-402b-9bb4-19fb53092808/en-US/03-skills-steering)

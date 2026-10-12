@@ -96,7 +96,7 @@ evaluator.update_trajectory_description(tool_descriptions)
 
 # Run experiment
 experiment = Experiment[str, str](cases=test_cases, evaluators=[evaluator])
-reports = experiment.run_evaluations(get_response_with_tools)
+report = experiment.run_evaluations(get_response_with_tools)
 
 print("=== Trajectory Evaluation Results ===")
-reports[0].run_display()
+report.run_display()

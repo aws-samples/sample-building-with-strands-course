@@ -2,7 +2,8 @@
 
 This repo contains runnable code samples designed to be cloned and run in your own AWS account. Each folder in `samples/` covers a core concept of building AI agent harnesses, from the basic agent loop through multi-agent systems, evaluations, and production deployment.
 
-> **About this repo:** Strands is an actively developed project. APIs, tools, and best practices evolve. This repo tracks those changes and always reflects current recommendations. The companion videos are a point-in-time snapshot: the concepts and patterns they teach are still valid, but specific imports or tool names in the code may differ from what you see in the videos. When in doubt, trust the code in this repo.
+> [!WARNING]
+> **Before you follow along:** Strands is an actively developed project. APIs, tools, and best practices evolve. The samples and readings are updated as those APIs change. The companion videos are a point-in-time snapshot: the concepts and patterns they teach are still valid, but specific imports or tool names in the code may differ from what you see in the videos. When in doubt, trust the code in this repo.
 
 ## What is Strands?
 
@@ -11,9 +12,9 @@ This repo contains runnable code samples designed to be cloned and run in your o
 - **Strands Harness SDK** - The agent harness building framework. Build the loop, connect tools, add hooks, manage context, compose multi-agent systems. This is what the course focuses on.
 - **Strands Evals** - Evaluate agent quality with LLM-as-a-judge, trajectory validation, chaos testing, and red teaming.
 - **Strands Shell** - Sandboxed execution environments for agents that need filesystem and network access.
-- **Strands MCP Server** - Expose your Strands agents as [MCP tool servers](https://strandsagents.com/docs/user-guide/quickstart/python/#strands-mcp-server-optional) so other agents and tools can call them.
+- **Strands MCP Server** - Expose your Strands agents as [MCP tool servers](https://strandsagents.com/docs/user-guide/sdk/quickstart/python/#strands-mcp-server-optional) so other agents and tools can call them.
 
-This course explores the agent framework in depth and touches on evaluations. There's a lot more to explore in the [full documentation](https://strandsagents.com/docs/user-guide/quickstart/python/).
+This course explores the agent framework in depth and touches on evaluations. There's a lot more to explore in the [full documentation](https://strandsagents.com/docs/user-guide/sdk/quickstart/python/).
 
 ## Prerequisites
 
@@ -30,7 +31,7 @@ cd sample-building-with-strands-course
 python3 -m venv .venv
 source .venv/bin/activate
 
-pip install strands-agents
+pip install -r requirements.txt
 ```
 
 Then pick any sample and run it:
@@ -40,7 +41,10 @@ cd samples/01-agent-loop
 python simple_agent.py
 ```
 
-> **Note on tools:** These samples use vended tools that ship with the `strands-agents` SDK (`strands.vended_tools`). This is the recommended way to get out-of-the-box tools like `file_editor`, `shell`, and `web_fetch`. No additional tool packages are needed to run the samples.
+> **Note on tools:** These samples use vended tools that ship with the `strands-agents` SDK (`strands.vended_tools`). This is the recommended way to get out-of-the-box tools like `file_editor`, `shell`, and `web_fetch`. Web examples also need the SDK's `web-fetch` extra, included in `requirements.txt`.
+
+The current sample baseline is Python 3.10+ with `strands-agents==1.59.0`.
+See [COURSE_UPDATES.md](COURSE_UPDATES.md) for the lesson-by-lesson audit and validation limits.
 
 ## Alternative Model Providers
 
@@ -124,7 +128,7 @@ Make sure you activated the virtual environment:
 
 ```bash
 source .venv/bin/activate
-pip install strands-agents
+pip install -r requirements.txt
 ```
 
 ### AWS credentials not found?
@@ -161,7 +165,7 @@ More examples of deploying and operating agents with Amazon Bedrock AgentCore:
 ## Links
 
 - [Strands Agents Homepage](https://strandsagents.com)
-- [Strands Agents Documentation](https://strandsagents.com/docs/user-guide/quickstart/python/)
+- [Strands Agents Documentation](https://strandsagents.com/docs/user-guide/sdk/quickstart/python/)
 - [Strands Agents GitHub](https://github.com/strands-agents/sdk-python)
 - [Strands Evals](https://github.com/strands-agents/evals)
 - [Strands Shell](https://github.com/strands-agents/shell)

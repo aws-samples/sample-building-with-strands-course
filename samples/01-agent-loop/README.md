@@ -1,5 +1,12 @@
 # The Agent Loop
 
+> [!WARNING]
+> **Before you follow along:** The video is a snapshot in time. Follow the code
+> and reading here, and check [the lesson updates](../../COURSE_UPDATES.md) for differences.
+
+> [!WARNING]
+> **Changed since recording:** The samples use SDK-vended `file_editor`, `shell`, and `web_fetch` instead of the older community-tool imports. Web fetching needs the optional dependencies: `pip install "strands-agents[web-fetch]"`. Use the imports shown below.
+
 The agent loop is the core orchestration cycle that every agent harness runs. On each request the cycle is:
 
 ```
@@ -7,6 +14,14 @@ Input & Context → Reasoning (LLM) → Tool Selection → Tool Execution → Re
 ```
 
 The model reasons about what to do, optionally selects a tool, executes it, feeds the result back, and repeats until it has enough information to produce a final response. You write the tools; Strands runs the loop. Everything else in the SDK - hooks, memory, steering, deployment - wraps around this loop.
+
+## Setup
+
+These examples use web fetching. Install its optional dependencies:
+
+```bash
+pip install "strands-agents[web-fetch]==1.59.0"
+```
 
 ## Files
 
@@ -37,6 +52,6 @@ python agent_with_defaults.py
 
 ## Further Reading
 
-- [Strands Agents: Agent Loop](https://strandsagents.com/docs/user-guide/concepts/agents/agent-loop/)
-- [Strands Agents: Custom Tools](https://strandsagents.com/docs/user-guide/concepts/tools/custom-tools/)
+- [Strands Agents: Agent Loop](https://strandsagents.com/docs/user-guide/sdk/agents/agent-loop/)
+- [Strands Agents: Custom Tools](https://strandsagents.com/docs/user-guide/sdk/tools/custom-tools/)
 - [Hands-on Workshop: Build Your First Agent](https://catalog.us-east-1.prod.workshops.aws/workshops/083b80d7-5a90-402b-9bb4-19fb53092808/en-US)
